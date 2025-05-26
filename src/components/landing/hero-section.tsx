@@ -26,12 +26,12 @@ export function HeroSection() {
           </div>
           <div className="flex justify-center items-center">
             <Image
-              src="https://placehold.co/500x450.png"
-              alt="Shopper scanning QR code for loyalty points"
+              src="/HeroImage.jpg"
+              alt="Shopper engaging with loyalty program"
               width={500}
               height={450}
               className="rounded-xl shadow-2xl object-cover"
-              data-ai-hint="shopper qr-code mobile phone"
+              data-ai-hint="loyalty program interface"
               priority
             />
           </div>

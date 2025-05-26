@@ -1,6 +1,7 @@
+
 import { MaxWidthWrapper } from '@/components/max-width-wrapper';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2, BarChart3, Smartphone, Repeat, Settings2 } from 'lucide-react';
+import { Smartphone, BarChart3, Palette, Repeat, Settings2, Server } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface Benefit {
@@ -12,28 +13,33 @@ interface Benefit {
 const benefits: Benefit[] = [
   {
     icon: Smartphone,
-    title: 'No App Required',
-    description: 'Customers access their loyalty status via a simple web link – no downloads needed.',
+    title: 'Seamless QR & Web Access',
+    description: 'Customers engage via QR codes or web links—no app needed. A fully functional, accessible loyalty system.',
   },
   {
     icon: BarChart3,
-    title: 'Real-Time Customer Analytics',
-    description: 'Gain valuable insights into customer behavior and purchase patterns.',
+    title: 'Insightful Customer Analytics',
+    description: 'Leverage real-time data and customer insights (data mining) to understand behavior and personalize offers.',
   },
   {
-    icon: CheckCircle2, // Placeholder, might need a branding icon
-    title: 'Fully Branded Loyalty Websites',
-    description: 'Maintain your brand consistency with a customizable loyalty portal.',
+    icon: Palette,
+    title: 'Your Brand, Your Portal',
+    description: 'Maintain brand consistency with a customizable, white-labeled customer loyalty portal.',
   },
   {
     icon: Repeat,
-    title: 'Increases Repeat Purchases',
-    description: 'Incentivize customers to return more often and spend more.',
+    title: 'Boost Sales & Retention',
+    description: 'Incentivize repeat purchases and foster loyalty, unlocking upselling opportunities and long-term customer value.',
   },
   {
     icon: Settings2,
-    title: 'Customizable for Any Industry',
-    description: 'Tailor rewards and tiers to fit your specific business needs perfectly.',
+    title: 'Flexible & Customizable',
+    description: 'Tailor rewards, tiers, and the platform to fit your specific business needs, regardless of industry.',
+  },
+  {
+    icon: Server,
+    title: 'Reliable Infrastructure & Updates',
+    description: 'Count on secure hosting, robust databases, dedicated support, and continuous platform improvements.',
   },
 ];
 
@@ -53,8 +59,8 @@ export function BenefitsSection() {
           {benefits.map((benefit) => (
             <Card key={benefit.title} className="bg-card shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl group hover:scale-105">
               <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                <div className="p-3 bg-[hsl(var(--primary))]/10 rounded-lg">
-                  <benefit.icon className="w-7 h-7 text-[hsl(var(--primary))]" />
+                <div className="p-3 bg-primary/10 rounded-lg">
+                  <benefit.icon className="w-7 h-7 text-primary" />
                 </div>
                 <CardTitle className="text-xl font-semibold text-foreground">{benefit.title}</CardTitle>
               </CardHeader>

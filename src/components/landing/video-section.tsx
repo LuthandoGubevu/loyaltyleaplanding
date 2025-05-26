@@ -26,7 +26,6 @@ export function VideoSection() {
             playsInline
             className="w-full h-full object-cover rounded-xl"
             preload="metadata"
-            poster="https://placehold.co/1920x1080.png?text=Loading+Video..."
             data-ai-hint="product demo video"
           >
             <source src={`/${videoFileName}`} type="video/mp4" />

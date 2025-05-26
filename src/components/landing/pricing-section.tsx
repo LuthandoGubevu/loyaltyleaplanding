@@ -1,3 +1,4 @@
+
 import { MaxWidthWrapper } from '@/components/max-width-wrapper';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,7 @@ interface PricingTier {
 const tiers: PricingTier[] = [
   {
     name: 'Starter',
-    price: '$29',
+    price: 'R800',
     priceFrequency: '/month',
     description: 'Perfect for new businesses getting started with loyalty.',
     features: ['Up to 500 customers', 'Basic QR code loyalty', 'Branded loyalty page', 'Email support'],
@@ -25,7 +26,7 @@ const tiers: PricingTier[] = [
   },
   {
     name: 'Growth',
-    price: '$79',
+    price: 'R1500',
     priceFrequency: '/month',
     description: 'Ideal for growing businesses looking for more features.',
     features: ['Up to 2500 customers', 'All Starter features', 'Customer analytics', 'Customizable rewards', 'Priority email support'],

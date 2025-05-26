@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { MaxWidthWrapper } from '@/components/max-width-wrapper';
@@ -16,10 +17,10 @@ export function HeroSection() {
               Loyalty Leap empowers small businesses like yours to effortlessly build customer loyalty, drive repeat visits, and boost revenue with a simple, effective, and fully branded rewards program.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Button size="lg" asChild className="bg-white text-primary hover:bg-white/90 shadow-lg px-8 py-3">
+              <Button size="lg" asChild>
                 <Link href="#demo">Book a Demo</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="border-white text-white hover:bg-white/10 shadow-lg px-8 py-3">
+              <Button size="lg" asChild>
                 <Link href="#how-it-works">Learn More</Link>
               </Button>
             </div>
@@ -27,7 +28,7 @@ export function HeroSection() {
           <div className="flex justify-center items-center">
             <Image
               src="/HeroImage.jpg"
-              alt="Shopper engaging with loyalty program"
+              alt="Loyalty program interface demonstration"
               width={500}
               height={450}
               className="rounded-xl shadow-2xl object-cover"

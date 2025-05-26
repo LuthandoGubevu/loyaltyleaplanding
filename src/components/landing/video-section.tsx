@@ -26,6 +26,7 @@ export function VideoSection() {
             width="1920" // Native width of the video (e.g., 1920 for 1080p)
             height="1080" // Native height of the video (e.g., 1080 for 1080p)
             controls
+            playsInline // Added for better mobile experience
             className="w-full h-full object-cover rounded-xl" // Ensures video fills container, maintains aspect ratio, and has rounded corners
             preload="metadata" // Good practice: fetches video metadata (dimensions, duration) without downloading the video
           >

@@ -6,7 +6,6 @@ import { BenefitsSection } from '@/components/landing/benefits-section';
 import { VideoSection } from '@/components/landing/video-section';
 import { TestimonialsSection } from '@/components/landing/testimonials-section';
 import { PricingSection } from '@/components/landing/pricing-section';
-import { LiveQrSection } from '@/components/landing/live-qr-section';
 import { FaqSection } from '@/components/landing/faq-section';
 
 export default function LoyaltyLandingPage() {
@@ -20,7 +19,6 @@ export default function LoyaltyLandingPage() {
         <VideoSection />
         <TestimonialsSection />
         <PricingSection />
-        <LiveQrSection />
         <FaqSection />
       </main>
       <SiteFooter />

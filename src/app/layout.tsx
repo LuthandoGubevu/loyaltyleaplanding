@@ -16,6 +16,16 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Loyalty Leap - Turn Shoppers into Loyal Customers',
   description: 'Loyalty Leap helps small businesses drive repeat visits with a white-labeled loyalty platform.',
+  manifest: '/manifest.json',
+  themeColor: '#E26C5E',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Loyalty Leap',
+  },
+  icons: {
+    apple: '/icons/192x192.png',
+  },
 };
 
 export default function RootLayout({

@@ -3,14 +3,9 @@
 
 import {
   Activity,
-  ArrowUpRight,
-  CircleUser,
+  Users,
   CreditCard,
   DollarSign,
-  Menu,
-  Package2,
-  Search,
-  Users,
 } from "lucide-react"
 
 import {
@@ -18,8 +13,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -28,35 +21,16 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import Link from "next/link"
-import {
-  Bar,
+  LineChart,
+  Line,
   BarChart,
+  Bar,
   ResponsiveContainer,
   XAxis,
   YAxis,
   Tooltip,
   Legend,
   CartesianGrid,
-  LineChart,
-  Line,
 } from "recharts"
 
 const customerGrowthData = [
@@ -81,8 +55,7 @@ const pointsData = [
 
 export default function AdminDashboard() {
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+    <div className="flex flex-1 flex-col gap-4">
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -253,83 +226,6 @@ export default function AdminDashboard() {
                 </CardContent>
             </Card>
         </div>
-        <div className="grid grid-cols-1 gap-4">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Reward Manager</CardTitle>
-                    <CardDescription>
-                    Add, edit, or disable available rewards.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                    <TableHeader>
-                        <TableRow>
-                        <TableHead>Reward</TableHead>
-                        <TableHead>Points Cost</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>
-                            <span className="sr-only">Actions</span>
-                        </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow>
-                        <TableCell className="font-medium">Free Coffee</TableCell>
-                        <TableCell>100</TableCell>
-                        <TableCell><Badge variant="outline">Active</Badge></TableCell>
-                        <TableCell>
-                            <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                                >
-                                <Menu className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                <DropdownMenuItem>Disable</DropdownMenuItem>
-                                <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
-                        </TableRow>
-                         <TableRow>
-                        <TableCell className="font-medium">R50 Off Purchase</TableCell>
-                        <TableCell>500</TableCell>
-                        <TableCell><Badge variant="outline">Active</Badge></TableCell>
-                        <TableCell>
-                            <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                                >
-                                <Menu className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                <DropdownMenuItem>Disable</DropdownMenuItem>
-                                <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
-                        </TableRow>
-                    </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
-        </div>
-      </main>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useSearchParams } from "next/navigation"
 import {
   Card,
   CardContent,
@@ -20,6 +21,7 @@ import {
     LineChart,
     Line,
   } from "recharts"
+import { getLoyaltyData } from "@/lib/mock-data";
 
 const customerGrowthData = [
     { month: "Jan", new: 40, total: 240 },
@@ -42,16 +44,25 @@ const pointsData = [
 ];
 
 export default function AnalyticsPage() {
+  const searchParams = useSearchParams();
+  const storeId = searchParams.get('storeId');
+  const currentStore = storeId ? getLoyaltyData().stores.find(s => s.id === storeId) : null;
+  
+  // This is where you would fetch/filter data based on storeId
+  // For now, we'll just display the same data but modify titles
+  const displayedCustomerGrowthData = customerGrowthData; // Replace with filtered data
+  const displayedPointsData = pointsData; // Replace with filtered data
+
   return (
     <div className="grid gap-4 md:gap-8">
         <Card>
             <CardHeader>
-                <CardTitle>Customer Growth</CardTitle>
+                <CardTitle>Customer Growth {currentStore ? `at ${currentStore.name}` : ''}</CardTitle>
                 <CardDescription>New vs. Total Customers</CardDescription>
             </CardHeader>
             <CardContent className="h-[350px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={customerGrowthData}>
+                    <LineChart data={displayedCustomerGrowthData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis yAxisId="left" />
@@ -66,12 +77,12 @@ export default function AnalyticsPage() {
             </Card>
             <Card>
             <CardHeader>
-                <CardTitle>Points Activity</CardTitle>
+                <CardTitle>Points Activity {currentStore ? `at ${currentStore.name}` : ''}</CardTitle>
                 <CardDescription>Points Issued vs. Redeemed</CardDescription>
             </CardHeader>
             <CardContent className="h-[350px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={pointsData}>
+                    <BarChart data={displayedPointsData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
                         <YAxis />

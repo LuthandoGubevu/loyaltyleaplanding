@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -20,17 +21,26 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { getLoyaltyData } from "@/lib/mock-data";
 
-
-const rewards = [
-    { name: "Free Coffee", cost: 100, status: "Active", store: "The Cozy Cafe" },
-    { name: "R50 Off Purchase", cost: 500, status: "Active", store: "The Cozy Cafe" },
-    { name: "25% Off Haircut", cost: 1000, status: "Active", store: "Modern Cuts Salon" },
-    { name: "Exclusive Tote Bag", cost: 2000, status: "Disabled", store: "Urban Threads Boutique" },
-    { name: "Free Bouquet", cost: 150, status: 'Active', store: 'Bloom & Grow Florist' }
+const allRewards = [
+    { name: "Free Coffee", cost: 100, status: "Active", store: "The Cozy Cafe", storeId: "cozy-cafe" },
+    { name: "R50 Off Purchase", cost: 500, status: "Active", store: "The Cozy Cafe", storeId: "cozy-cafe" },
+    { name: "25% Off Haircut", cost: 1000, status: "Active", store: "Modern Cuts Salon", storeId: "modern-cuts" },
+    { name: "Exclusive Tote Bag", cost: 2000, status: "Disabled", store: "Urban Threads Boutique", storeId: "urban-threads" },
+    { name: "Free Bouquet", cost: 150, status: 'Active', store: 'Bloom & Grow Florist', storeId: "bloom-and-grow" }
 ]
 
 export default function RewardsPage() {
+  const searchParams = useSearchParams();
+  const storeId = searchParams.get('storeId');
+
+  const rewards = storeId && storeId !== 'all' 
+    ? allRewards.filter(r => r.storeId === storeId)
+    : allRewards;
+  
+  const currentStore = storeId ? getLoyaltyData().stores.find(s => s.id === storeId) : null;
+
   return (
     <Card>
         <CardHeader>
@@ -38,7 +48,7 @@ export default function RewardsPage() {
                 <div>
                     <CardTitle>Reward Manager</CardTitle>
                     <CardDescription>
-                    Add, edit, or disable available rewards.
+                        Add, edit, or disable available rewards {currentStore ? `for ${currentStore.name}` : ''}.
                     </CardDescription>
                 </div>
                 <Button size="sm" className="gap-1">

@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useSearchParams } from "next/navigation"
 import {
   Activity,
   Users,
@@ -32,6 +33,7 @@ import {
   Legend,
   CartesianGrid,
 } from "recharts"
+import { getLoyaltyData } from "@/lib/mock-data"
 
 const customerGrowthData = [
   { month: "Jan", new: 40, total: 240 },
@@ -53,16 +55,24 @@ const pointsData = [
     { name: 'Jul', issued: 3490, redeemed: 4300 },
 ];
 
-const recentActivity = [
+const recentActivityAllStores = [
     { name: "Olivia Martin", email: "olivia.martin@email.com", action: "Redeemed: Free Coffee", store: "The Cozy Cafe", change: "-50 pts" },
-    { name: "Jackson Lee", email: "jackson.lee@email.com", action: "Earned Points", store: "Modern Cuts", change: "+150 pts" },
-    { name: "Isabella Nguyen", email: "isabella.nguyen@email.com", action: "Earned Points", store: "Bloom & Grow", change: "+90 pts" },
-    { name: "William Kim", email: "will@email.com", action: "Earned Points", store: "Urban Threads", change: "+30 pts" },
+    { name: "Jackson Lee", email: "jackson.lee@email.com", action: "Earned Points", store: "Modern Cuts Salon", change: "+150 pts" },
+    { name: "Isabella Nguyen", email: "isabella.nguyen@email.com", action: "Earned Points", store: "Bloom & Grow Florist", change: "+90 pts" },
+    { name: "William Kim", email: "will@email.com", action: "Earned Points", store: "Urban Threads Boutique", change: "+30 pts" },
     { name: "Sofia Davis", email: "sofia.davis@email.com", action: "Earned Points", store: "The Cozy Cafe", change: "+40 pts" },
 ]
 
 
 export default function AdminDashboard() {
+  const searchParams = useSearchParams()
+  const storeId = searchParams.get("storeId") || "all"
+  
+  const recentActivity = storeId === 'all' 
+    ? recentActivityAllStores
+    : recentActivityAllStores.filter(activity => getLoyaltyData().stores.find(s => s.name === activity.store)?.id === storeId)
+
+
   return (
     <div className="flex flex-1 flex-col gap-4">
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
@@ -165,7 +175,7 @@ export default function AdminDashboard() {
                 <CardHeader>
                 <CardTitle>Recent Activity</CardTitle>
                 <CardDescription>
-                    A log of recent customer actions across all stores.
+                    A log of recent customer actions across {storeId === 'all' ? 'all stores' : getLoyaltyData().stores.find(s=>s.id === storeId)?.name}.
                 </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-8">

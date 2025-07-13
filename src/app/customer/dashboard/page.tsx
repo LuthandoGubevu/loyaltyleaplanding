@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,29 +33,6 @@ const pointHistory = [
   { date: "2024-05-18", action: "Redeemed: Free Coffee", points: "-100" },
   { date: "2024-05-15", action: "Birthday Bonus", points: "+200" },
   { date: "2024-05-10", action: "Purchase at Modern Cuts", points: "+150" },
-];
-
-const availableRewards = [
-  {
-    name: "Free Coffee or Pastry",
-    points: 100,
-    description: "Enjoy a complimentary coffee or pastry on your next visit.",
-  },
-  {
-    name: "R50 Off Your Purchase",
-    points: 500,
-    description: "Get R50 off when you spend R200 or more.",
-  },
-  {
-    name: "25% Off Haircut",
-    points: 1000,
-    description: "A special treat from Modern Cuts salon.",
-  },
-  {
-    name: "Exclusive Tote Bag",
-    points: 2000,
-    description: "A limited edition branded tote bag.",
-  },
 ];
 
 const progress = {
@@ -118,35 +96,13 @@ export default function CustomerDashboardPage() {
         <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8 xl:col-span-3">
            <Card>
             <CardHeader>
-              <CardTitle>Available Rewards</CardTitle>
+              <CardTitle>Next Reward Progress</CardTitle>
               <CardDescription>
-                Use your points to claim these exclusive rewards.
+                {progress.text}
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid sm:grid-cols-2 gap-4">
-              {availableRewards.map((reward) => (
-                <Card key={reward.name}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <Gift className="h-5 w-5 text-primary" />
-                      {reward.name}
-                    </CardTitle>
-                    <CardDescription>{reward.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Badge variant="outline">{reward.points} Points</Badge>
-                  </CardContent>
-                  <CardFooter>
-                    <Button
-                      size="sm"
-                      disabled={customer.totalPoints < reward.points}
-                      className="w-full"
-                    >
-                      Redeem
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+            <CardContent>
+              <Progress value={(progress.current/progress.goal) * 100} aria-label="Next reward progress" />
             </CardContent>
           </Card>
         </div>

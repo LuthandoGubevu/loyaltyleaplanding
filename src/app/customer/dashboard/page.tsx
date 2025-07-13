@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Gift, Star, DollarSign, Edit } from "lucide-react";
+import { Gift, Star, DollarSign, Edit, QrCode } from "lucide-react";
 import Link from "next/link";
 
 // Mock Data
@@ -96,16 +96,21 @@ export default function CustomerDashboardPage() {
             <Progress value={75} aria-label="75% increase" />
           </CardFooter>
         </Card>
-        <Card>
+        <Card className="flex flex-col items-center justify-center text-center">
             <CardHeader>
-                <CardDescription>Next Reward Progress</CardDescription>
-                 <CardTitle className="text-2xl">{progress.current} / {progress.goal} pts</CardTitle>
+                <CardDescription>Ready to earn?</CardDescription>
+                <CardTitle className="text-2xl">Scan a QR Code</CardTitle>
             </CardHeader>
-            <CardContent>
-                <Progress value={(progress.current/progress.goal) * 100} className="w-full" />
+            <CardContent className="flex-grow flex items-center justify-center">
+                 <Button asChild size="lg">
+                    <Link href="/customer/scan" className="flex gap-2">
+                        <QrCode className="h-6 w-6" />
+                        Scan Now
+                    </Link>
+                 </Button>
             </CardContent>
-            <CardFooter>
-                <p className="text-xs text-muted-foreground">{progress.text}</p>
+             <CardFooter>
+                <p className="text-xs text-muted-foreground">Scan at checkout to collect points.</p>
             </CardFooter>
         </Card>
       </div>

@@ -1,6 +1,7 @@
 
 "use client"
 
+import { Suspense } from 'react';
 import { useSearchParams } from "next/navigation"
 import {
   Card,
@@ -22,6 +23,7 @@ import {
     Line,
   } from "recharts"
 import { getLoyaltyData } from "@/lib/mock-data";
+import { Skeleton } from '@/components/ui/skeleton';
 
 const customerGrowthData = [
     { month: "Jan", new: 40, total: 240 },
@@ -43,7 +45,7 @@ const pointsData = [
       { name: 'Jul', issued: 3490, redeemed: 4300 },
 ];
 
-export default function AnalyticsPage() {
+function AnalyticsContent() {
   const searchParams = useSearchParams();
   const storeId = searchParams.get('storeId');
   const currentStore = storeId ? getLoyaltyData().stores.find(s => s.id === storeId) : null;
@@ -96,4 +98,37 @@ export default function AnalyticsPage() {
         </Card>
     </div>
   );
+}
+
+function AnalyticsSkeleton() {
+    return (
+        <div className="grid gap-4 md:gap-8">
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-8 w-1/2" />
+                    <Skeleton className="h-4 w-1/3" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-[350px] w-full" />
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-8 w-1/2" />
+                    <Skeleton className="h-4 w-1/3" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-[350px] w-full" />
+                </CardContent>
+            </Card>
+        </div>
+    )
+}
+
+export default function AnalyticsPage() {
+    return (
+        <Suspense fallback={<AnalyticsSkeleton />}>
+            <AnalyticsContent />
+        </Suspense>
+    )
 }

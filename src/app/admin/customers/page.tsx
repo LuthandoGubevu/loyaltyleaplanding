@@ -1,6 +1,7 @@
 
 "use client";
 
+import { Suspense } from 'react';
 import { useSearchParams } from "next/navigation"
 import {
     Card,
@@ -20,6 +21,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getLoyaltyData } from "@/lib/mock-data";
+import { Skeleton } from '@/components/ui/skeleton';
 
 const allCustomers = [
     { name: "Olivia Martin", email: "olivia.martin@email.com", totalPoints: 1250, tier: "Gold", stores: ["cozy-cafe", "urban-threads"]},
@@ -29,7 +31,7 @@ const allCustomers = [
     { name: "Sofia Davis", email: "sofia.davis@email.com", totalPoints: 1570, tier: "Gold", stores: ["cozy-cafe", "bloom-and-grow"]},
 ]
 
-export default function CustomersPage() {
+function CustomersContent() {
   const searchParams = useSearchParams();
   const storeId = searchParams.get('storeId');
 
@@ -82,4 +84,40 @@ export default function CustomersPage() {
       </CardContent>
     </Card>
   );
+}
+
+function CustomersSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-1/4" />
+                <Skeleton className="h-4 w-1/2" />
+            </CardHeader>
+            <CardContent>
+                 <div className="space-y-4">
+                    {[...Array(5)].map((_, i) => (
+                        <div key={i} className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <Skeleton className="h-9 w-9 rounded-full" />
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-24" />
+                                    <Skeleton className="h-4 w-32" />
+                                </div>
+                            </div>
+                            <Skeleton className="h-6 w-16 rounded-full" />
+                            <Skeleton className="h-6 w-12" />
+                        </div>
+                    ))}
+                 </div>
+            </CardContent>
+        </Card>
+    )
+}
+
+export default function CustomersPage() {
+    return (
+        <Suspense fallback={<CustomersSkeleton />}>
+            <CustomersContent />
+        </Suspense>
+    )
 }

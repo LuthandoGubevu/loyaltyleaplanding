@@ -1,6 +1,7 @@
 
 "use client"
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation"
 import {
   Activity,
@@ -34,6 +35,7 @@ import {
   CartesianGrid,
 } from "recharts"
 import { getLoyaltyData } from "@/lib/mock-data"
+import { Skeleton } from "@/components/ui/skeleton";
 
 const customerGrowthData = [
   { month: "Jan", new: 40, total: 240 },
@@ -63,8 +65,7 @@ const recentActivityAllStores = [
     { name: "Sofia Davis", email: "sofia.davis@email.com", action: "Earned Points", store: "The Cozy Cafe", change: "+40 pts" },
 ]
 
-
-export default function AdminDashboard() {
+function DashboardContent() {
   const searchParams = useSearchParams()
   const storeId = searchParams.get("storeId") || "all"
   
@@ -198,5 +199,73 @@ export default function AdminDashboard() {
             </Card>
         </div>
     </div>
+  )
+}
+
+function DashboardSkeleton() {
+    return (
+        <div className="flex flex-1 flex-col gap-4">
+            <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+                {[...Array(4)].map((_,i) => (
+                    <Card key={i}>
+                        <CardHeader>
+                            <Skeleton className="h-5 w-3/4" />
+                        </CardHeader>
+                        <CardContent>
+                            <Skeleton className="h-8 w-1/2 mb-2" />
+                            <Skeleton className="h-4 w-1/3" />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+             <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
+                 <div className="xl:col-span-2 grid gap-4">
+                    <Card>
+                        <CardHeader>
+                            <Skeleton className="h-8 w-1/2" />
+                            <Skeleton className="h-4 w-1/3" />
+                        </CardHeader>
+                        <CardContent>
+                            <Skeleton className="h-[300px] w-full" />
+                        </CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader>
+                            <Skeleton className="h-8 w-1/2" />
+                            <Skeleton className="h-4 w-1/3" />
+                        </CardHeader>
+                        <CardContent>
+                            <Skeleton className="h-[300px] w-full" />
+                        </CardContent>
+                    </Card>
+                 </div>
+                 <Card>
+                    <CardHeader>
+                         <Skeleton className="h-8 w-1/2" />
+                         <Skeleton className="h-4 w-1/3" />
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {[...Array(5)].map((_, i) => (
+                             <div key={i} className="flex items-center gap-4">
+                                <Skeleton className="h-9 w-9 rounded-full" />
+                                <div className="space-y-2 flex-1">
+                                    <Skeleton className="h-4 w-2/3" />
+                                    <Skeleton className="h-4 w-1/2" />
+                                </div>
+                                <Skeleton className="h-6 w-12" />
+                             </div>
+                        ))}
+                    </CardContent>
+                 </Card>
+             </div>
+        </div>
+    )
+}
+
+export default function AdminDashboard() {
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardContent />
+    </Suspense>
   )
 }

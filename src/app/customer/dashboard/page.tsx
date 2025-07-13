@@ -59,23 +59,6 @@ export default function CustomerDashboardPage() {
             <Progress value={75} aria-label="75% increase" />
           </CardFooter>
         </Card>
-        <Card className="flex flex-col items-center justify-center text-center">
-            <CardHeader>
-                <CardDescription>Ready to earn?</CardDescription>
-                <CardTitle className="text-2xl">Scan a QR Code</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-grow flex items-center justify-center">
-                 <Button asChild size="lg">
-                    <Link href="/customer/scan" className="flex gap-2">
-                        <QrCode className="h-6 w-6" />
-                        Scan Now
-                    </Link>
-                 </Button>
-            </CardContent>
-             <CardFooter>
-                <p className="text-xs text-muted-foreground">Scan at checkout to collect points.</p>
-            </CardFooter>
-        </Card>
       </div>
       <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
          <Card>

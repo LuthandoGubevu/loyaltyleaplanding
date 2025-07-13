@@ -53,6 +53,15 @@ const pointsData = [
     { name: 'Jul', issued: 3490, redeemed: 4300 },
 ];
 
+const recentActivity = [
+    { name: "Olivia Martin", email: "olivia.martin@email.com", action: "Redeemed: Free Coffee", store: "The Cozy Cafe", change: "-50 pts" },
+    { name: "Jackson Lee", email: "jackson.lee@email.com", action: "Earned Points", store: "Modern Cuts", change: "+150 pts" },
+    { name: "Isabella Nguyen", email: "isabella.nguyen@email.com", action: "Earned Points", store: "Bloom & Grow", change: "+90 pts" },
+    { name: "William Kim", email: "will@email.com", action: "Earned Points", store: "Urban Threads", change: "+30 pts" },
+    { name: "Sofia Davis", email: "sofia.davis@email.com", action: "Earned Points", store: "The Cozy Cafe", change: "+40 pts" },
+]
+
+
 export default function AdminDashboard() {
   return (
     <div className="flex flex-1 flex-col gap-4">
@@ -156,73 +165,25 @@ export default function AdminDashboard() {
                 <CardHeader>
                 <CardTitle>Recent Activity</CardTitle>
                 <CardDescription>
-                    A log of recent customer actions.
+                    A log of recent customer actions across all stores.
                 </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-8">
-                <div className="flex items-center gap-4">
-                    <Avatar className="hidden h-9 w-9 sm:flex">
-                    <AvatarImage src="/avatars/01.png" alt="Avatar" data-ai-hint="user avatar" />
-                    <AvatarFallback>OM</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">Olivia Martin</p>
-                    <p className="text-sm text-muted-foreground">
-                        olivia.martin@email.com
-                    </p>
+                {recentActivity.map(activity => (
+                    <div key={activity.email + activity.action} className="flex items-center gap-4">
+                        <Avatar className="hidden h-9 w-9 sm:flex">
+                        <AvatarImage src={`https://placehold.co/40x40.png`} alt="Avatar" data-ai-hint="user avatar" />
+                        <AvatarFallback>{activity.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="grid gap-1">
+                            <p className="text-sm font-medium leading-none">{activity.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                                {activity.action} at {activity.store}
+                            </p>
+                        </div>
+                        <div className={`ml-auto font-medium ${activity.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{activity.change}</div>
                     </div>
-                    <div className="ml-auto font-medium text-green-500">+R1,999.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Avatar className="hidden h-9 w-9 sm:flex">
-                    <AvatarImage src="/avatars/02.png" alt="Avatar" data-ai-hint="user avatar" />
-                    <AvatarFallback>JL</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">Jackson Lee</p>
-                    <p className="text-sm text-muted-foreground">
-                        jackson.lee@email.com
-                    </p>
-                    </div>
-                    <div className="ml-auto font-medium text-green-500">+R39.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Avatar className="hidden h-9 w-9 sm:flex">
-                    <AvatarImage src="/avatars/03.png" alt="Avatar" data-ai-hint="user avatar" />
-                    <AvatarFallback>IN</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">Isabella Nguyen</p>
-                    <p className="text-sm text-muted-foreground">
-                        isabella.nguyen@email.com
-                    </p>
-                    </div>
-                    <div className="ml-auto font-medium text-red-500">-R299.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Avatar className="hidden h-9 w-9 sm:flex">
-                    <AvatarImage src="/avatars/04.png" alt="Avatar" data-ai-hint="user avatar" />
-                    <AvatarFallback>WK</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">William Kim</p>
-                    <p className="text-sm text-muted-foreground">will@email.com</p>
-                    </div>
-                    <div className="ml-auto font-medium text-green-500">+R99.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Avatar className="hidden h-9 w-9 sm:flex">
-                    <AvatarImage src="/avatars/05.png" alt="Avatar" data-ai-hint="user avatar" />
-                    <AvatarFallback>SD</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">Sofia Davis</p>
-                    <p className="text-sm text-muted-foreground">
-                        sofia.davis@email.com
-                    </p>
-                    </div>
-                    <div className="ml-auto font-medium text-green-500">+R39.00</div>
-                </div>
+                ))}
                 </CardContent>
             </Card>
         </div>

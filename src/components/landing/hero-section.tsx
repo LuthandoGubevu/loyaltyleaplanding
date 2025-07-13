@@ -18,17 +18,17 @@ export function HeroSection() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Button size="lg" asChild>
-                <Link href="#demo">Book a Demo</Link>
+                <Link href="/customer/dashboard">Customer View</Link>
               </Button>
-              <Button size="lg" asChild>
-                <Link href="#how-it-works">Learn More</Link>
+              <Button size="lg" variant="secondary" asChild>
+                <Link href="/admin/login">Admin View</Link>
               </Button>
             </div>
           </div>
           <div className="flex justify-center items-center">
             <Image
               src="/HeroImage.jpg"
-              alt="Loyalty program interface demonstration"
+              alt="A smiling shopper scanning a QR code with their phone at a checkout counter."
               width={500}
               height={450}
               className="rounded-xl shadow-2xl object-cover"

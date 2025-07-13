@@ -25,8 +25,11 @@ export function SiteHeader() {
               </Button>
             ))}
             <Button asChild>
-              <Link href="#demo">Book a Demo</Link>
+              <Link href="/customer/dashboard">Customer View</Link>
             </Button>
+             <Button variant="secondary" asChild>
+                <Link href="/admin/login">Admin View</Link>
+              </Button>
           </nav>
           <div className="md:hidden">
             <Sheet>
@@ -45,7 +48,10 @@ export function SiteHeader() {
                     </Button>
                   ))}
                   <Button asChild>
-                    <Link href="#demo">Book a Demo</Link>
+                    <Link href="/customer/dashboard">Customer View</Link>
+                  </Button>
+                  <Button variant="secondary" asChild>
+                    <Link href="/admin/login">Admin View</Link>
                   </Button>
                 </div>
               </SheetContent>

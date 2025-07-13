@@ -1,5 +1,4 @@
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,69 +9,71 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Gift, Star, DollarSign, Edit, QrCode } from "lucide-react";
+import { getLoyaltyData } from "@/lib/mock-data";
+import { ArrowRight, QrCode } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
-// Mock Data
-const customer = {
-  name: "Sarah",
-  totalPoints: 1250,
-  tier: "Gold",
-};
-
-const progress = {
-  current: 250,
-  goal: 1000,
-  text: "You are 750 points away from Platinum Tier!",
-};
-
 export default function CustomerDashboardPage() {
+  const loyaltyData = getLoyaltyData();
+
   return (
-    <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
-        <Card className="sm:col-span-2">
-          <CardHeader className="pb-3">
-            <CardTitle>Hey {customer.name}!</CardTitle>
-            <CardDescription className="max-w-lg text-balance leading-relaxed">
-              Welcome to your Loyalty Dashboard. Here's a summary of your points
-              and rewards.
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Badge variant={customer.tier === 'Gold' ? "default" : "secondary"} className="text-sm">
-                <Star className="mr-2 h-4 w-4" />
-                {customer.tier} Tier
-            </Badge>
-          </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Points</CardDescription>
-            <CardTitle className="text-4xl">{customer.totalPoints}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xs text-muted-foreground">
-              +10% from last month
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Progress value={75} aria-label="75% increase" />
-          </CardFooter>
-        </Card>
-      </div>
-      <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-         <Card>
-          <CardHeader>
-            <CardTitle>Next Reward Progress</CardTitle>
-            <CardDescription>
-              {progress.text}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Progress value={(progress.current/progress.goal) * 100} aria-label="Next reward progress" />
-          </CardContent>
-        </Card>
-      </div>
+    <div className="grid auto-rows-max items-start gap-4 md:gap-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Stores</CardTitle>
+          <CardDescription>
+            Here's a summary of your loyalty points across different stores.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {loyaltyData.stores.map((store) => (
+              <Card key={store.id} className="flex flex-col">
+                <CardHeader className="flex-row items-center gap-4">
+                  <Image
+                    src={store.logo}
+                    alt={`${store.name} logo`}
+                    width={48}
+                    height={48}
+                    className="rounded-lg border"
+                    data-ai-hint="store logo"
+                  />
+                  <div>
+                    <CardTitle>{store.name}</CardTitle>
+                    <CardDescription>{store.points} Points</CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <div className="mb-2 text-xs text-muted-foreground">
+                    Next Reward: {store.nextReward.title}
+                  </div>
+                  <Progress value={(store.points / store.nextReward.requiredPoints) * 100} />
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    {store.nextReward.requiredPoints - store.points > 0
+                      ? `${store.nextReward.requiredPoints - store.points} points to go`
+                      : "Reward available!"}
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between items-center">
+                    <Button asChild variant="outline">
+                        <Link href={`/customer/store/${store.id}`}>
+                            View Store
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                    </Button>
+                    <Button asChild size="icon">
+                        <Link href={`/customer/scan?storeId=${store.id}`}>
+                           <QrCode className="h-5 w-5" />
+                           <span className="sr-only">Scan for {store.name}</span>
+                        </Link>
+                    </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

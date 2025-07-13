@@ -21,7 +21,11 @@ export function BottomNav() {
     <nav className="sm:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t border-border/40 shadow-[0_-1px_4px_rgba(0,0,0,0.05)] z-50">
       <div className="flex justify-around items-center h-full max-w-md mx-auto">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          // Updated active check to handle dynamic routes like /customer/store/[id]
+          const isActive = item.href === '/customer/dashboard'
+            ? pathname === item.href || pathname.startsWith('/customer/store')
+            : pathname === item.href;
+            
           if (item.isCenter) {
             return (
               <Link href={item.href} key={item.href} className="-mt-8">
@@ -47,7 +51,7 @@ export function BottomNav() {
               )}
             >
               <item.icon className="h-6 w-6 mb-1" />
-              <span className="text-xs">{item.label}</span>
+              <span className="text-xs font-medium">{item.label}</span>
             </Link>
           );
         })}

@@ -21,7 +21,7 @@ export function HeroSection() {
                 <Link href="/customer/dashboard">Customer View</Link>
               </Button>
               <Button size="lg" variant="secondary" asChild>
-                <Link href="/admin/login">Admin View</Link>
+                <Link href="/admin/dashboard">Admin View</Link>
               </Button>
             </div>
           </div>

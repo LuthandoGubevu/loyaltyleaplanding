@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Logo } from './logo';
 import { MaxWidthWrapper } from './max-width-wrapper';
@@ -28,7 +29,7 @@ export function SiteHeader() {
               <Link href="/customer/dashboard">Customer View</Link>
             </Button>
              <Button variant="secondary" asChild>
-                <Link href="/admin/login">Admin View</Link>
+                <Link href="/admin/dashboard">Admin View</Link>
               </Button>
           </nav>
           <div className="md:hidden">
@@ -54,7 +55,7 @@ export function SiteHeader() {
                     <Link href="/customer/dashboard">Customer View</Link>
                   </Button>
                   <Button variant="secondary" asChild>
-                    <Link href="/admin/login">Admin View</Link>
+                    <Link href="/admin/dashboard">Admin View</Link>
                   </Button>
                 </div>
               </SheetContent>

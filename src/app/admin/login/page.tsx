@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -34,8 +35,8 @@ export default function AdminLoginPage() {
               </div>
               <Input id="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" asChild>
+              <Link href="/admin/dashboard">Login</Link>
             </Button>
             <Button variant="outline" className="w-full" asChild>
               <Link href="/">Back to Home</Link>
@@ -46,3 +47,5 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+
+    

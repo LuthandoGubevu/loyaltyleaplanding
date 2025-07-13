@@ -3,15 +3,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, Gift, QrCode, Store, History } from "lucide-react";
+import { User, Gift, QrCode, Store, History, LayoutGrid, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/customer/profile", icon: User, label: "Profile" },
+  { href: "/customer/dashboard", icon: LayoutGrid, label: "Dashboard" },
   { href: "/customer/rewards", icon: Gift, label: "Rewards" },
   { href: "/customer/scan", icon: QrCode, label: "Scan", isCenter: true },
   { href: "/customer/shops", icon: Store, label: "Shops" },
-  { href: "/customer/activity", icon: History, label: "Activity" },
+  { href: "/", icon: LogOut, label: "Logout" },
 ];
 
 export function BottomNav() {

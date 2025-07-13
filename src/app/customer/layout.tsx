@@ -46,42 +46,6 @@ export default function CustomerDashboardLayout({
               <Gift className="h-4 w-4 transition-all group-hover:scale-110" />
               <span className="sr-only">Loyalty Leap</span>
             </Link>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/customer/dashboard"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <LayoutGrid className="h-5 w-5" />
-                  <span className="sr-only">Dashboard</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Dashboard</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <Gift className="h-5 w-5" />
-                  <span className="sr-only">Rewards</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Rewards</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <User className="h-5 w-5" />
-                  <span className="sr-only">Profile</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Profile</TooltipContent>
-            </Tooltip>
           </nav>
           <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
             <Tooltip>
@@ -121,14 +85,14 @@ export default function CustomerDashboardLayout({
                     Dashboard
                   </Link>
                   <Link
-                    href="#"
-                    className="flex items-center gap-4 px-2.5 text-foreground"
+                    href="/customer/rewards"
+                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   >
                     <Gift className="h-5 w-5" />
                     Rewards
                   </Link>
                   <Link
-                    href="#"
+                    href="/customer/profile"
                     className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   >
                     <User className="h-5 w-5" />

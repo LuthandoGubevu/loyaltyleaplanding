@@ -77,45 +77,18 @@ export default function CustomerDashboardPage() {
             </CardFooter>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8 xl:col-span-3">
-           <Card>
-            <CardHeader>
-              <CardTitle>Next Reward Progress</CardTitle>
-              <CardDescription>
-                {progress.text}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Progress value={(progress.current/progress.goal) * 100} aria-label="Next reward progress" />
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid auto-rows-max items-start gap-4 lg:gap-8 xl:col-span-2">
-           <Card>
-            <CardHeader className="flex flex-row items-center">
-                <div className="grid gap-2">
-                <CardTitle>Your Profile</CardTitle>
-                <CardDescription>
-                    Manage your personal information.
-                </CardDescription>
-                </div>
-                <Button asChild size="sm" className="ml-auto gap-1">
-                <Link href="/customer/profile">
-                    Edit Profile
-                    <Edit className="h-4 w-4" />
-                </Link>
-                </Button>
-            </CardHeader>
-            <CardContent>
-                <div className="grid gap-1 text-sm">
-                    <div className="font-semibold">Name: {customer.name}</div>
-                    <div>Email: sarah@example.com</div>
-                    <div>Tier: {customer.tier}</div>
-                </div>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
+         <Card>
+          <CardHeader>
+            <CardTitle>Next Reward Progress</CardTitle>
+            <CardDescription>
+              {progress.text}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Progress value={(progress.current/progress.goal) * 100} aria-label="Next reward progress" />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

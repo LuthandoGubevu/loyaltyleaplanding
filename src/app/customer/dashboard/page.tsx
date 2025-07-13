@@ -10,14 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Gift, Star, DollarSign, Edit, QrCode } from "lucide-react";
 import Link from "next/link";
 
@@ -27,13 +19,6 @@ const customer = {
   totalPoints: 1250,
   tier: "Gold",
 };
-
-const pointHistory = [
-  { date: "2024-05-20", action: "Purchase at The Cozy Cafe", points: "+50" },
-  { date: "2024-05-18", action: "Redeemed: Free Coffee", points: "-100" },
-  { date: "2024-05-15", action: "Birthday Bonus", points: "+200" },
-  { date: "2024-05-10", action: "Purchase at Modern Cuts", points: "+150" },
-];
 
 const progress = {
   current: 250,
@@ -108,36 +93,6 @@ export default function CustomerDashboardPage() {
         </div>
         <div className="grid auto-rows-max items-start gap-4 lg:gap-8 xl:col-span-2">
            <Card>
-            <CardHeader className="px-7">
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>
-                A log of your recent points activity.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Action</TableHead>
-                    <TableHead className="text-right">Points</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {pointHistory.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <div className="font-medium text-muted-foreground">{item.date}</div>
-                      </TableCell>
-                       <TableCell>{item.action}</TableCell>
-                      <TableCell className={`text-right ${item.points.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{item.points}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-           <Card>
             <CardHeader className="flex flex-row items-center">
                 <div className="grid gap-2">
                 <CardTitle>Your Profile</CardTitle>
@@ -146,7 +101,7 @@ export default function CustomerDashboardPage() {
                 </CardDescription>
                 </div>
                 <Button asChild size="sm" className="ml-auto gap-1">
-                <Link href="#">
+                <Link href="/customer/profile">
                     Edit Profile
                     <Edit className="h-4 w-4" />
                 </Link>

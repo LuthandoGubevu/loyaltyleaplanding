@@ -1,4 +1,6 @@
 
+"use client"
+
 import {
   Activity,
   ArrowUpRight,
@@ -331,5 +333,3 @@ export default function AdminDashboard() {
     </div>
   )
 }
-
-    

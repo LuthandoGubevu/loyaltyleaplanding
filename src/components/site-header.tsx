@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Logo } from './logo';
 import { MaxWidthWrapper } from './max-width-wrapper';
 import { Button } from './ui/button';
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from 'lucide-react';
 
 export function SiteHeader() {
@@ -40,6 +40,9 @@ export function SiteHeader() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right">
+                <SheetHeader className="text-left">
+                  <SheetTitle className="sr-only">Navigation</SheetTitle>
+                </SheetHeader>
                 <div className="flex flex-col space-y-4 p-4">
                   <Logo />
                   {navItems.map((item) => (

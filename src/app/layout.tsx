@@ -1,4 +1,4 @@
-import type {Metadata} from 'next';
+import type {Metadata, Viewport} from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -18,7 +18,6 @@ export const metadata: Metadata = {
   title: 'Loyalty Leap - Turn Shoppers into Loyal Customers',
   description: 'Loyalty Leap helps small businesses drive repeat visits with a white-labeled loyalty platform.',
   manifest: '/manifest.json',
-  themeColor: '#E26C5E',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -28,6 +27,10 @@ export const metadata: Metadata = {
     apple: '/icons/192x192.png',
   },
 };
+
+export const viewport: Viewport = {
+  themeColor: '#E26C5E',
+}
 
 export default function RootLayout({
   children,

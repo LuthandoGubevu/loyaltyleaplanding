@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Gift, Star, DollarSign, Edit } from "lucide-react";
+import Link from "next/link";
 
 // Mock Data
 const customer = {

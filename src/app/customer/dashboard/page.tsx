@@ -10,9 +10,16 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { getLoyaltyData } from "@/lib/mock-data";
-import { ArrowRight, QrCode } from "lucide-react";
+import { ArrowRight, QrCode, Coffee, Flower, Scissors, Shirt } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
+const storeIcons: { [key: string]: React.ElementType } = {
+    "cozy-cafe": Coffee,
+    "bloom-and-grow": Flower,
+    "modern-cuts": Scissors,
+    "urban-threads": Shirt,
+};
 
 export default function CustomerDashboardPage() {
   const loyaltyData = getLoyaltyData();
@@ -28,17 +35,14 @@ export default function CustomerDashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {loyaltyData.stores.map((store) => (
+            {loyaltyData.stores.map((store) => {
+              const Icon = storeIcons[store.id] || QrCode;
+              return (
               <Card key={store.id} className="flex flex-col">
                 <CardHeader className="flex-row items-center gap-4">
-                  <Image
-                    src={store.logo}
-                    alt={`${store.name} logo`}
-                    width={48}
-                    height={48}
-                    className="rounded-lg border"
-                    data-ai-hint="store logo"
-                  />
+                  <div className="w-12 h-12 rounded-lg border bg-muted-foreground/10 flex items-center justify-center">
+                    <Icon className="w-7 h-7 text-muted-foreground" />
+                  </div>
                   <div>
                     <CardTitle>{store.name}</CardTitle>
                     <CardDescription>{store.points} Points</CardDescription>
@@ -70,7 +74,7 @@ export default function CustomerDashboardPage() {
                     </Button>
                 </CardFooter>
               </Card>
-            ))}
+            )})}
           </div>
         </CardContent>
       </Card>

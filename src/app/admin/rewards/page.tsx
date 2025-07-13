@@ -23,10 +23,11 @@ import { MoreHorizontal, PlusCircle } from "lucide-react";
 
 
 const rewards = [
-    { name: "Free Coffee", cost: 100, status: "Active" },
-    { name: "R50 Off Purchase", cost: 500, status: "Active" },
-    { name: "25% Off Haircut", cost: 1000, status: "Active" },
-    { name: "Exclusive Tote Bag", cost: 2000, status: "Disabled" },
+    { name: "Free Coffee", cost: 100, status: "Active", store: "The Cozy Cafe" },
+    { name: "R50 Off Purchase", cost: 500, status: "Active", store: "The Cozy Cafe" },
+    { name: "25% Off Haircut", cost: 1000, status: "Active", store: "Modern Cuts Salon" },
+    { name: "Exclusive Tote Bag", cost: 2000, status: "Disabled", store: "Urban Threads Boutique" },
+    { name: "Free Bouquet", cost: 150, status: 'Active', store: 'Bloom & Grow Florist' }
 ]
 
 export default function RewardsPage() {
@@ -51,6 +52,7 @@ export default function RewardsPage() {
             <TableHeader>
                 <TableRow>
                 <TableHead>Reward</TableHead>
+                <TableHead>Store</TableHead>
                 <TableHead>Points Cost</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>
@@ -62,6 +64,7 @@ export default function RewardsPage() {
                 {rewards.map(reward => (
                     <TableRow key={reward.name}>
                         <TableCell className="font-medium">{reward.name}</TableCell>
+                        <TableCell>{reward.store}</TableCell>
                         <TableCell>{reward.cost}</TableCell>
                         <TableCell>
                             <Badge variant={reward.status === 'Active' ? 'outline' : 'secondary'}>{reward.status}</Badge>

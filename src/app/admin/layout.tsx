@@ -3,7 +3,6 @@
 
 import Link from "next/link"
 import {
-  Bell,
   CircleUser,
   Search,
   Package2
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { AdminBottomNav } from "@/components/admin/bottom-nav"
+import { StoreSwitcher } from "@/components/admin/store-switcher"
 
 
 export default function AdminLayout({
@@ -30,10 +30,11 @@ export default function AdminLayout({
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
+            <Link href="/" className="hidden items-center gap-2 font-semibold sm:flex">
               <Package2 className="h-6 w-6" />
-              <span className="">Loyalty Leap</span>
+              <span>Loyalty Leap</span>
             </Link>
+            <StoreSwitcher />
             <div className="relative ml-auto flex-1 md:grow-0">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input

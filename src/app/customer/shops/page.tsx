@@ -24,14 +24,14 @@ const mockShops = [
     name: "Modern Cuts Salon",
     category: "Salon",
     description: "Stay stylish with our expert hair and beauty services.",
-    imageUrl: "https://images.unsplash.com/photo-1622288432454-245447b8a7f2?q=80&w=600&h=400&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1599351431202-123b3133534b?q=80&w=600&h=400&fit=crop",
     imageHint: "modern salon",
   },
   {
     name: "Bloom & Grow Florist",
     category: "Retail",
     description: "Beautiful bouquets and arrangements for every occasion.",
-    imageUrl: "https://images.unsplash.com/photo-1579933526092-7a7a5f237584?q=80&w=600&h=400&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1518739884574-62281358b688?q=80&w=600&h=400&fit=crop",
     imageHint: "flower shop",
   },
   {
@@ -52,7 +52,7 @@ const mockShops = [
     name: "FreshFusion Juicery",
     category: "Health",
     description: "Healthy juices, smoothies, and bowls made with fresh ingredients.",
-    imageUrl: "https://images.unsplash.com/photo-1600579033391-ccc9e49a8899?q=80&w=600&h=400&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1623067339913-67c3b832b851?q=80&w=600&h=400&fit=crop",
     imageHint: "juice bar",
   },
 ];

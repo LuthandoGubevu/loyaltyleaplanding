@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -24,6 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Logo } from "@/components/logo";
+import { BottomNav } from "@/components/customer/bottom-nav";
 
 export default function CustomerDashboardLayout({
   children,
@@ -138,10 +140,11 @@ export default function CustomerDashboardLayout({
               </SheetContent>
             </Sheet>
           </header>
-          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+          <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 pb-20 sm:pb-4">
             {children}
           </main>
         </div>
+        <BottomNav />
       </div>
     </TooltipProvider>
   );

@@ -3,7 +3,11 @@ import type {NextConfig} from 'next';
 const withPWA = require("next-pwa")({
   dest: "public",
   register: true,
-  skipWaiting: true
+  skipWaiting: true,
+  cacheOnFrontEndNav: true, // Revalidate cache on navigation
+  fallbacks: {
+    document: '/_offline', // Fallback for document requests
+  },
 });
 
 const nextConfig: NextConfig = {

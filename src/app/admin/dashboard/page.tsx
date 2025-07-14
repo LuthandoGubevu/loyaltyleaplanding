@@ -1,7 +1,7 @@
 
 import { Suspense } from "react";
-import { DashboardContent } from "@/components/admin/dashboard/content";
-import { DashboardSkeleton } from "@/components/admin/dashboard/skeleton";
+import { DashboardContent } from "../../../components/admin/dashboard/content";
+import { DashboardSkeleton } from "../../../components/admin/dashboard/skeleton";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 

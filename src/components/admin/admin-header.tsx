@@ -4,7 +4,6 @@
 import Link from "next/link"
 import {
   CircleUser,
-  Search,
   Package2
 } from "lucide-react"
 
@@ -17,7 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import { StoreSwitcher } from "@/components/admin/store-switcher"
 
 export function AdminHeader() {
@@ -28,30 +26,24 @@ export function AdminHeader() {
           <span>Loyalty Leap</span>
         </Link>
         <StoreSwitcher />
-        <div className="relative ml-auto flex-1 md:grow-0">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-            type="search"
-            placeholder="Search..."
-            className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-            />
+        <div className="ml-auto flex items-center gap-4">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                <Button variant="secondary" size="icon" className="rounded-full">
+                    <CircleUser className="h-5 w-5" />
+                    <span className="sr-only">Toggle user menu</span>
+                </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem>Support</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon" className="rounded-full">
-                <CircleUser className="h-5 w-5" />
-                <span className="sr-only">Toggle user menu</span>
-            </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
     </header>
   )
 }

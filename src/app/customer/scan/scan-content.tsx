@@ -28,83 +28,81 @@ export function ScanContent() {
 
 
   useEffect(() => {
-    if (!scannerRef.current) {
-      scannerRef.current = new Html5Qrcode(qrcodeRegionId, {
-        verbose: false
-      });
-    }
+    scannerRef.current = new Html5Qrcode(qrcodeRegionId, {
+      verbose: false
+    });
     const html5Qrcode = scannerRef.current;
 
     const startScanner = async () => {
-        setIsScanning(true);
-        setScanResult(null);
-
-        // Check for camera permissions
-        try {
-            const devices = await Html5Qrcode.getCameras();
-            if (!devices || devices.length === 0) {
-                setHasPermission(false);
-                toast({
-                    variant: "destructive",
-                    title: "No cameras found.",
-                    description: "Could not find any cameras on this device.",
-                });
-                return;
-            }
-            setHasPermission(true);
-        } catch (err) {
-            setHasPermission(false);
-            toast({
-                variant: "destructive",
-                title: "Camera Access Denied",
-                description: "Please enable camera permissions in your browser settings.",
-            });
-            return;
+      try {
+        const devices = await Html5Qrcode.getCameras();
+        if (!devices || devices.length === 0) {
+          setHasPermission(false);
+          toast({
+            variant: "destructive",
+            title: "No cameras found.",
+            description: "Could not find any cameras on this device.",
+          });
+          return;
         }
-
-        const qrCodeSuccessCallback = (decodedText: string) => {
-            const pointsEarned = Math.floor(Math.random() * 50) + 10; // Simulate earning 10-60 points
-            setScanResult(`Simulated scan for ${store?.name || 'a store'}. You earned ${pointsEarned} points!`);
-            toast({
-                title: "Points Earned!",
-                description: `You've earned ${pointsEarned} points at ${store?.name || 'this store'}!`,
-            });
-            stopScanner();
-        };
-
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-        try {
-             if (html5Qrcode.getState() !== Html5QrcodeScannerState.SCANNING) {
-                await html5Qrcode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback, undefined);
-             }
-        } catch(err) {
-            console.error("Error starting scanner: ", err);
-             toast({
-                variant: "destructive",
-                title: "Scanner Error",
-                description: "Could not start the QR code scanner.",
-            });
-            setIsScanning(false);
-        }
-    };
-    
-    const stopScanner = () => {
-      if (scannerRef.current && scannerRef.current.isScanning) {
-        scannerRef.current.stop().then(() => {
-          setIsScanning(false);
-        }).catch((err) => {
-          console.error("Failed to stop scanner", err);
+        setHasPermission(true);
+      } catch (err) {
+        setHasPermission(false);
+        console.error("Camera permission error:", err);
+        toast({
+          variant: "destructive",
+          title: "Camera Access Denied",
+          description: "Please enable camera permissions in your browser settings.",
         });
+        return;
+      }
+      
+      setIsScanning(true);
+      setScanResult(null);
+
+      const qrCodeSuccessCallback = (decodedText: string) => {
+        const pointsEarned = Math.floor(Math.random() * 50) + 10;
+        setScanResult(`Simulated scan for ${store?.name || 'a store'}. You earned ${pointsEarned} points!`);
+        toast({
+          title: "Points Earned!",
+          description: `You've earned ${pointsEarned} points at ${store?.name || 'this store'}!`,
+        });
+        setIsScanning(false);
+        if (html5Qrcode.isScanning) {
+            html5Qrcode.stop().catch(err => console.error("Error stopping scanner post-success", err));
+        }
+      };
+
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+      // Ensure we only start if not already scanning or in an intermediate state
+      if (html5Qrcode.getState() === Html5QrcodeScannerState.NOT_STARTED) {
+          try {
+            await html5Qrcode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback, undefined);
+          } catch(err) {
+              console.error("Error starting scanner: ", err);
+              toast({
+                  variant: "destructive",
+                  title: "Scanner Error",
+                  description: "Could not start the QR code scanner.",
+              });
+              setIsScanning(false);
+          }
       }
     };
-
+    
     startScanner();
 
     return () => {
-      stopScanner();
+        if (scannerRef.current?.isScanning) {
+            scannerRef.current.stop().catch((err) => {
+                console.error("Failed to stop scanner on cleanup", err);
+            });
+        }
     };
-  }, [toast, store]);
+  // The dependencies array is empty to run only on mount and cleanup on unmount.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   const handleRescan = () => {
       window.location.reload();

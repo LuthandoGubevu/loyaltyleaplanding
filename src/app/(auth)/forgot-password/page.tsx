@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(form-schema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
     },

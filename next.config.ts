@@ -1,18 +1,17 @@
+
 import type {NextConfig} from 'next';
-require('dotenv').config()
 
 const withPWA = require("next-pwa")({
   dest: "public",
   register: true,
   skipWaiting: true,
-  cacheOnFrontEndNav: true, // Revalidate cache on navigation
+  cacheOnFrontEndNav: true, 
   fallbacks: {
-    document: '/_offline', // Fallback for document requests
+    document: '/_offline',
   },
 });
 
 const nextConfig: NextConfig = {
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },

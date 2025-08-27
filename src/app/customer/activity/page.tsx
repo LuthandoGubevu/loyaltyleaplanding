@@ -15,14 +15,8 @@ import {
     TableRow,
   } from "@/components/ui/table";
 
-  const pointHistory = [
-    { date: "2024-05-20", action: "Purchase at The Cozy Cafe", points: "+50" },
-    { date: "2024-05-18", action: "Redeemed: Free Coffee", points: "-100" },
-    { date: "2024-05-15", action: "Birthday Bonus", points: "+200" },
-    { date: "2024-05-10", action: "Purchase at Modern Cuts", points: "+150" },
-    { date: "2024-05-05", action: "Purchase at Bloom & Grow", points: "+75" },
-    { date: "2024-05-01", action: "Welcome Bonus", points: "+100" },
-  ];
+  // Mock data removed
+  const pointHistory: any[] = [];
   
   export default function ActivityPage() {
     return (
@@ -44,15 +38,23 @@ import {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pointHistory.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <div className="font-medium text-muted-foreground">{item.date}</div>
-                      </TableCell>
-                       <TableCell>{item.action}</TableCell>
-                      <TableCell className={`text-right ${item.points.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{item.points}</TableCell>
+                  {pointHistory.length > 0 ? (
+                    pointHistory.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          <div className="font-medium text-muted-foreground">{item.date}</div>
+                        </TableCell>
+                        <TableCell>{item.action}</TableCell>
+                        <TableCell className={`text-right ${item.points.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{item.points}</TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                        <TableCell colSpan={3} className="text-center h-24">
+                            No activity to show yet.
+                        </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -60,4 +62,3 @@ import {
       </div>
     );
   }
-  

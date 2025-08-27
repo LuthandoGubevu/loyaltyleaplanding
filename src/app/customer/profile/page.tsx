@@ -10,11 +10,11 @@ import {
 import { Edit } from "lucide-react";
 import Link from "next/link";
   
-// Mock Data
+// Mock Data removed for a real client
 const customer = {
-  name: "Sarah",
-  email: "sarah@example.com",
-  tier: "Gold",
+  name: "New Customer",
+  email: "customer@example.com",
+  tier: "Bronze",
 };
 
 export default function ProfilePage() {

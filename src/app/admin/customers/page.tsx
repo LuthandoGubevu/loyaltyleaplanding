@@ -23,13 +23,8 @@ import { Badge } from "@/components/ui/badge";
 import { getLoyaltyData } from "@/lib/mock-data";
 import { Skeleton } from '@/components/ui/skeleton';
 
-const allCustomers = [
-    { name: "Olivia Martin", email: "olivia.martin@email.com", totalPoints: 1250, tier: "Gold", stores: ["cozy-cafe", "urban-threads"]},
-    { name: "Jackson Lee", email: "jackson.lee@email.com", totalPoints: 830, tier: "Silver", stores: ["modern-cuts"]},
-    { name: "Isabella Nguyen", email: "isabella.nguyen@email.com", totalPoints: 450, tier: "Bronze", stores: ["bloom-and-grow"]},
-    { name: "William Kim", email: "will@email.com", totalPoints: 210, tier: "Bronze", stores: ["urban-threads"]},
-    { name: "Sofia Davis", email: "sofia.davis@email.com", totalPoints: 1570, tier: "Gold", stores: ["cozy-cafe", "bloom-and-grow"]},
-]
+// Mock data removed, assuming data will be fetched from a real backend.
+const allCustomers: any[] = [];
 
 function CustomersContent() {
   const searchParams = useSearchParams();
@@ -59,26 +54,34 @@ function CustomersContent() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {customers.map(customer => (
-                <TableRow key={customer.email}>
-                    <TableCell>
-                        <div className="flex items-center gap-4">
-                            <Avatar className="hidden h-9 w-9 sm:flex">
-                                <AvatarImage src={`https://placehold.co/40x40.png`} alt="Avatar" data-ai-hint="user avatar"/>
-                                <AvatarFallback>{customer.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <div className="grid gap-1">
-                                <p className="text-sm font-medium leading-none">{customer.name}</p>
-                                <p className="text-sm text-muted-foreground">{customer.email}</p>
+            {customers.length > 0 ? (
+                customers.map(customer => (
+                    <TableRow key={customer.email}>
+                        <TableCell>
+                            <div className="flex items-center gap-4">
+                                <Avatar className="hidden h-9 w-9 sm:flex">
+                                    <AvatarImage src={`https://placehold.co/40x40.png`} alt="Avatar" data-ai-hint="user avatar"/>
+                                    <AvatarFallback>{customer.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div className="grid gap-1">
+                                    <p className="text-sm font-medium leading-none">{customer.name}</p>
+                                    <p className="text-sm text-muted-foreground">{customer.email}</p>
+                                </div>
                             </div>
-                        </div>
+                        </TableCell>
+                        <TableCell>
+                            <Badge variant={customer.tier === 'Gold' ? 'default' : customer.tier === 'Silver' ? 'secondary' : 'outline'}>{customer.tier}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right">{customer.totalPoints}</TableCell>
+                    </TableRow>
+                ))
+            ) : (
+                <TableRow>
+                    <TableCell colSpan={3} className="text-center h-24">
+                        No customers yet.
                     </TableCell>
-                    <TableCell>
-                        <Badge variant={customer.tier === 'Gold' ? 'default' : customer.tier === 'Silver' ? 'secondary' : 'outline'}>{customer.tier}</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">{customer.totalPoints}</TableCell>
                 </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </CardContent>

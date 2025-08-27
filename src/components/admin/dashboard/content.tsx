@@ -19,34 +19,27 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, Users, CreditCard, Activity, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { getLoyaltyData } from "@/lib/mock-data";
 
+// Initial state for summary data
 const summaryData = [
-    { icon: DollarSign, title: "Total Revenue", value: "R45,231.89", change: "+20.1% from last month", changeType: "positive"},
-    { icon: Users, title: "Active Members", value: "+2350", change: "+180.1% from last month", changeType: "positive"},
-    { icon: CreditCard, title: "Rewards Redeemed", value: "1,245", change: "+19% from last month", changeType: "positive"},
-    { icon: Activity, title: "New Sign-ups (Today)", value: "57", change: "+2 since yesterday", changeType: "positive"},
+    { icon: DollarSign, title: "Total Revenue", value: "R0.00", change: "No data yet", changeType: "neutral"},
+    { icon: Users, title: "Active Members", value: "0", change: "No data yet", changeType: "neutral"},
+    { icon: CreditCard, title: "Rewards Redeemed", value: "0", change: "No data yet", changeType: "neutral"},
+    { icon: Activity, title: "New Sign-ups (Today)", value: "0", change: "No data yet", changeType: "neutral"},
 ];
 
-const recentTransactions = [
-    { name: "Olivia Martin", email: "olivia.martin@email.com", amount: "+R1,999.00"},
-    { name: "Jackson Lee", email: "jackson.lee@email.com", amount: "+R39.00"},
-    { name: "Isabella Nguyen", email: "isabella.nguyen@email.com", amount: "+R299.00"},
-    { name: "William Kim", email: "will@email.com", amount: "+R99.00"},
-    { name: "Sofia Davis", email: "sofia.davis@email.com", amount: "+R39.00"},
-];
+// Removed mock transactions
+const recentTransactions: any[] = [];
 
 
 export function DashboardContent() {
     const searchParams = useSearchParams();
     const storeId = searchParams.get('storeId');
     const currentStore = storeId ? getLoyaltyData().stores.find(s => s.id === storeId) : null;
-
-    // In a real app, you'd filter summaryData and recentTransactions by storeId
     
     return (
         <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
@@ -85,17 +78,25 @@ export function DashboardContent() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {recentTransactions.map(transaction => (
-                                <TableRow key={transaction.email}>
-                                    <TableCell>
-                                        <div className="font-medium">{transaction.name}</div>
-                                        <div className="hidden text-sm text-muted-foreground md:inline">
-                                            {transaction.email}
-                                        </div>
+                            {recentTransactions.length > 0 ? (
+                                recentTransactions.map(transaction => (
+                                    <TableRow key={transaction.email}>
+                                        <TableCell>
+                                            <div className="font-medium">{transaction.name}</div>
+                                            <div className="hidden text-sm text-muted-foreground md:inline">
+                                                {transaction.email}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-right">{transaction.amount}</TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={2} className="text-center h-24">
+                                        No transactions yet.
                                     </TableCell>
-                                    <TableCell className="text-right">{transaction.amount}</TableCell>
                                 </TableRow>
-                            ))}
+                            )}
                         </TableBody>
                         </Table>
                     </CardContent>
@@ -116,21 +117,9 @@ export function DashboardContent() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-8">
-                        <div className="flex items-center gap-4">
-                            <p className="text-sm font-medium text-muted-foreground">Free Coffee</p>
-                            <Progress value={52} className="flex-1" />
-                            <span className="text-sm font-medium">1.2k</span>
-                        </div>
-                         <div className="flex items-center gap-4">
-                            <p className="text-sm font-medium text-muted-foreground">R50 Off</p>
-                            <Progress value={37} className="flex-1" />
-                             <span className="text-sm font-medium">850</span>
-                        </div>
-                         <div className="flex items-center gap-4">
-                            <p className="text-sm font-medium text-muted-foreground">25% Haircut</p>
-                            <Progress value={19} className="flex-1" />
-                             <span className="text-sm font-medium">320</span>
-                        </div>
+                       <div className="flex items-center justify-center h-full text-muted-foreground">
+                            No reward data yet.
+                       </div>
                     </CardContent>
                     <CardFooter>
                         <Button asChild size="sm" className="ml-auto gap-1">

@@ -25,13 +25,8 @@ import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { getLoyaltyData } from "@/lib/mock-data";
 import { Skeleton } from '@/components/ui/skeleton';
 
-const allRewards = [
-    { name: "Free Coffee", cost: 100, status: "Active", store: "The Cozy Cafe", storeId: "cozy-cafe" },
-    { name: "R50 Off Purchase", cost: 500, status: "Active", store: "The Cozy Cafe", storeId: "cozy-cafe" },
-    { name: "25% Off Haircut", cost: 1000, status: "Active", store: "Modern Cuts Salon", storeId: "modern-cuts" },
-    { name: "Exclusive Tote Bag", cost: 2000, status: "Disabled", store: "Urban Threads Boutique", storeId: "urban-threads" },
-    { name: "Free Bouquet", cost: 150, status: 'Active', store: 'Bloom & Grow Florist', storeId: "bloom-and-grow" }
-]
+// Mock data removed
+const allRewards: any[] = [];
 
 function RewardsContent() {
   const searchParams = useSearchParams();
@@ -73,36 +68,44 @@ function RewardsContent() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {rewards.map(reward => (
-                    <TableRow key={reward.name}>
-                        <TableCell className="font-medium">{reward.name}</TableCell>
-                        <TableCell>{reward.store}</TableCell>
-                        <TableCell>{reward.cost}</TableCell>
-                        <TableCell>
-                            <Badge variant={reward.status === 'Active' ? 'outline' : 'secondary'}>{reward.status}</Badge>
-                        </TableCell>
-                        <TableCell>
-                            <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                                >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                <DropdownMenuItem>{reward.status === 'Active' ? 'Disable' : 'Enable'}</DropdownMenuItem>
-                                <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                            </DropdownMenu>
+                {rewards.length > 0 ? (
+                    rewards.map(reward => (
+                        <TableRow key={reward.name}>
+                            <TableCell className="font-medium">{reward.name}</TableCell>
+                            <TableCell>{reward.store}</TableCell>
+                            <TableCell>{reward.cost}</TableCell>
+                            <TableCell>
+                                <Badge variant={reward.status === 'Active' ? 'outline' : 'secondary'}>{reward.status}</Badge>
+                            </TableCell>
+                            <TableCell>
+                                <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                    aria-haspopup="true"
+                                    size="icon"
+                                    variant="ghost"
+                                    >
+                                    <MoreHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">Toggle menu</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuItem>Edit</DropdownMenuItem>
+                                    <DropdownMenuItem>{reward.status === 'Active' ? 'Disable' : 'Enable'}</DropdownMenuItem>
+                                    <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
+                                </DropdownMenuContent>
+                                </DropdownMenu>
+                            </TableCell>
+                        </TableRow>
+                    ))
+                ) : (
+                    <TableRow>
+                        <TableCell colSpan={5} className="text-center h-24">
+                            No rewards created yet. Click "Add Reward" to start.
                         </TableCell>
                     </TableRow>
-                ))}
+                )}
             </TableBody>
             </Table>
         </CardContent>

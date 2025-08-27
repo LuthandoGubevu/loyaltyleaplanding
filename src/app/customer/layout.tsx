@@ -12,6 +12,9 @@ import {
   Settings,
   History,
 } from "lucide-react";
+import { getAuth, signOut } from "firebase/auth";
+import { useRouter, usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,15 +32,21 @@ import {
 } from "@/components/ui/tooltip";
 import { Logo } from "@/components/logo";
 import { BottomNav } from "@/components/customer/bottom-nav";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { CustomerRoute } from "@/hooks/use-auth";
 
-export default function CustomerDashboardLayout({
+function CustomerLayoutContent({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const auth = getAuth();
+    await signOut(auth);
+    router.push('/login');
+  };
 
   const navItems = [
     { href: "/customer/dashboard", icon: LayoutGrid, label: "Dashboard" },
@@ -79,13 +88,15 @@ export default function CustomerDashboardLayout({
           <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link
-                  href="/"
+                <Button
+                  onClick={handleLogout}
+                  variant="ghost"
+                  size="icon"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
                   <LogOut className="h-5 w-5" />
                   <span className="sr-only">Logout</span>
-                </Link>
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="right">Logout</TooltipContent>
             </Tooltip>
@@ -116,13 +127,14 @@ export default function CustomerDashboardLayout({
                       {item.label}
                     </Link>
                   ))}
-                  <Link
-                    href="/"
-                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground mt-auto"
+                  <Button
+                    onClick={handleLogout}
+                    variant="ghost"
+                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground mt-auto justify-start"
                   >
                     <LogOut className="h-5 w-5" />
                     Logout
-                  </Link>
+                  </Button>
                 </nav>
               </SheetContent>
             </Sheet>
@@ -135,4 +147,16 @@ export default function CustomerDashboardLayout({
       </div>
     </TooltipProvider>
   );
+}
+
+export default function CustomerProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <CustomerRoute>
+      <CustomerLayoutContent>{children}</CustomerLayoutContent>
+    </CustomerRoute>
+  )
 }

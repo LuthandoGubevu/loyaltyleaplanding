@@ -5,6 +5,7 @@ import { MaxWidthWrapper } from './max-width-wrapper';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from 'lucide-react';
+import { AuthButtons } from './auth-buttons';
 
 export function SiteHeader() {
   const navItems = [
@@ -25,12 +26,7 @@ export function SiteHeader() {
                 <Link href={item.href}>{item.label}</Link>
               </Button>
             ))}
-            <Button asChild>
-              <Link href="/customer/dashboard">Customer View</Link>
-            </Button>
-             <Button variant="secondary" asChild>
-                <Link href="/admin/dashboard">Admin View</Link>
-              </Button>
+            <AuthButtons />
           </nav>
           <div className="md:hidden">
             <Sheet>
@@ -51,12 +47,9 @@ export function SiteHeader() {
                       <Link href={item.href}>{item.label}</Link>
                     </Button>
                   ))}
-                  <Button asChild>
-                    <Link href="/customer/dashboard">Customer View</Link>
-                  </Button>
-                  <Button variant="secondary" asChild>
-                    <Link href="/admin/dashboard">Admin View</Link>
-                  </Button>
+                  <div className="flex flex-col space-y-2">
+                    <AuthButtons />
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

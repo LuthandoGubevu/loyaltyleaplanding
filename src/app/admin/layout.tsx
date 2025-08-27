@@ -2,6 +2,7 @@
 "use client";
 
 import * as React from "react";
+import { AdminRoute } from "@/hooks/use-auth";
 import Link from "next/link";
 import {
   Home,
@@ -11,7 +12,9 @@ import {
   Users,
   Gift,
   PanelLeft,
+  LogOut,
 } from "lucide-react";
+import { getAuth, signOut } from "firebase/auth";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,15 +31,22 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-export default function AdminLayout({
+function AdminLayoutContent({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const auth = getAuth();
+    await signOut(auth);
+    router.push('/login');
+  };
 
   const navItems = [
     { href: "/admin/dashboard", icon: Home, label: "Dashboard" },
@@ -77,6 +87,22 @@ export default function AdminLayout({
               </Tooltip>
             ))}
           </nav>
+          <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={handleLogout}
+                  variant="ghost"
+                  size="icon"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                >
+                  <LogOut className="h-5 w-5" />
+                  <span className="sr-only">Logout</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">Logout</TooltipContent>
+            </Tooltip>
+          </nav>
         </aside>
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
             <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -109,10 +135,20 @@ export default function AdminLayout({
                                     {item.label}
                                 </Link>
                             ))}
+                              <Button
+                                onClick={handleLogout}
+                                variant="ghost"
+                                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground justify-start"
+                              >
+                                <LogOut className="h-5 w-5" />
+                                Logout
+                              </Button>
                         </nav>
                     </SheetContent>
                 </Sheet>
-                <AdminHeader />
+                <React.Suspense>
+                    <AdminHeader />
+                </React.Suspense>
             </header>
             <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 pb-20 sm:pb-4">
                 {children}
@@ -121,4 +157,17 @@ export default function AdminLayout({
       </div>
     </TooltipProvider>
   );
+}
+
+
+export default function AdminProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <AdminRoute>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </AdminRoute>
+  )
 }

@@ -70,7 +70,7 @@ export function PricingSection() {
               <CardFooter className="mt-6">
                 <Button
                   size="lg"
-                  className={`w-full ${tier.isRecommended ? 'bg-[hsl(var(--pricing-recommended-badge-hsl))] hover:bg-[hsl(var(--pricing-recommended-badge-hsl))]/90 text-white' : 'bg-primary hover:bg-primary/90 text-primary-foreground'}`}
+                  className={`w-full font-bold ${tier.isRecommended ? 'bg-[hsl(var(--pricing-recommended-badge-hsl))] hover:bg-[hsl(var(--pricing-recommended-badge-hsl))]/90 text-white' : 'bg-primary hover:bg-primary/90 text-primary-foreground'}`}
                   asChild
                 >
                   <Link href="/book-a-demo">{tier.ctaText}</Link>
@@ -83,3 +83,4 @@ export function PricingSection() {
     </section>
   );
 }
+

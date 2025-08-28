@@ -16,29 +16,12 @@ interface PricingTier {
 }
 
 const tiers: PricingTier[] = [
-  // {
-  //   name: 'Starter',
-  //   price: 'R800',
-  //   priceFrequency: '/month',
-  //   description: 'Perfect for new businesses getting started with loyalty.',
-  //   features: ['Up to 500 customers', 'Basic QR code loyalty', 'Branded loyalty page', 'Email support'],
-  //   ctaText: 'Get Started',
-  // },
-  // {
-  //   name: 'Growth',
-  //   price: 'R1500',
-  //   priceFrequency: '/month',
-  //   description: 'Ideal for growing businesses looking for more features.',
-  //   features: ['Up to 2500 customers', 'All Starter features', 'Customer analytics', 'Customizable rewards', 'Priority email support'],
-  //   isRecommended: true,
-  //   ctaText: 'Choose Growth',
-  // },
   {
     name: 'Custom',
     price: 'Let\'s Talk',
     priceFrequency: '',
-    description: 'Tailored solutions for larger businesses or specific needs.',
-    features: ['Unlimited customers', 'All Growth features', 'API access', 'Dedicated account manager', 'Custom integrations'],
+    description: "We tailor solutions for each business",
+    features: ['Basic QR code loyalty', 'Unlimited Customers', 'Email support', 'Customizable rewards', 'Customer analytics'],
     ctaText: 'Contact Us',
   },
 ];

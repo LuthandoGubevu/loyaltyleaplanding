@@ -16,23 +16,23 @@ interface PricingTier {
 }
 
 const tiers: PricingTier[] = [
-  {
-    name: 'Starter',
-    price: 'R800',
-    priceFrequency: '/month',
-    description: 'Perfect for new businesses getting started with loyalty.',
-    features: ['Up to 500 customers', 'Basic QR code loyalty', 'Branded loyalty page', 'Email support'],
-    ctaText: 'Get Started',
-  },
-  {
-    name: 'Growth',
-    price: 'R1500',
-    priceFrequency: '/month',
-    description: 'Ideal for growing businesses looking for more features.',
-    features: ['Up to 2500 customers', 'All Starter features', 'Customer analytics', 'Customizable rewards', 'Priority email support'],
-    isRecommended: true,
-    ctaText: 'Choose Growth',
-  },
+  // {
+  //   name: 'Starter',
+  //   price: 'R800',
+  //   priceFrequency: '/month',
+  //   description: 'Perfect for new businesses getting started with loyalty.',
+  //   features: ['Up to 500 customers', 'Basic QR code loyalty', 'Branded loyalty page', 'Email support'],
+  //   ctaText: 'Get Started',
+  // },
+  // {
+  //   name: 'Growth',
+  //   price: 'R1500',
+  //   priceFrequency: '/month',
+  //   description: 'Ideal for growing businesses looking for more features.',
+  //   features: ['Up to 2500 customers', 'All Starter features', 'Customer analytics', 'Customizable rewards', 'Priority email support'],
+  //   isRecommended: true,
+  //   ctaText: 'Choose Growth',
+  // },
   {
     name: 'Custom',
     price: 'Let\'s Talk',
@@ -55,11 +55,11 @@ export function PricingSection() {
             Choose the plan that’s right for you and start building customer loyalty today. No hidden fees.
           </p>
         </div>
-        <div className="grid lg:grid-cols-3 gap-8 items-stretch">
+        <div className="grid lg:grid-cols-3 gap-8 items-stretch justify-center">
           {tiers.map((tier) => (
             <Card
               key={tier.name}
-              className={`flex flex-col shadow-lg rounded-xl ${tier.isRecommended ? 'border-2 border-[hsl(var(--pricing-recommended-badge-hsl))] relative ring-4 ring-[hsl(var(--pricing-recommended-badge-hsl))] ring-opacity-20' : 'border-border'}`}
+              className={`flex flex-col shadow-lg rounded-xl ${tier.isRecommended ? 'border-2 border-[hsl(var(--pricing-recommended-badge-hsl))] relative ring-4 ring-[hsl(var(--pricing-recommended-badge-hsl))] ring-opacity-20' : 'border-border'} ${tiers.length === 1 ? 'lg:col-span-1 lg:max-w-md mx-auto' : ''}`}
             >
               {tier.isRecommended && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[hsl(var(--pricing-recommended-badge-hsl))] text-white px-4 py-1 text-sm font-semibold rounded-full shadow-md">

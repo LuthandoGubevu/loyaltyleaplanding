@@ -21,9 +21,6 @@ export function HeroSection() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                <InstallPwaButton />
-              <Button size="lg" variant="secondary" asChild>
-                <Link href="/login">Log In</Link>
-              </Button>
             </div>
           </div>
           <div className="flex justify-center items-center">

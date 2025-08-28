@@ -14,13 +14,9 @@ export const metadata: Metadata = {
   title: 'Loyalty Leap - Turn Shoppers into Loyal Customers',
   description: 'Loyalty Leap helps small businesses drive repeat visits with a white-labeled loyalty platform.',
   manifest: '/manifest.json',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'Loyalty Leap',
-  },
   icons: {
-    apple: '/icons/192x192.png',
+    icon: '/gift.png',
+    apple: '/gift.png',
   },
 };
 

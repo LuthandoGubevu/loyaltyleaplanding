@@ -44,7 +44,7 @@ export function FaqSection() {
               Find answers to common questions about Loyalty Leap. If you don't see your question here, feel free to reach out.
             </p>
             <Button size="lg" asChild className="mt-8 bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Link href="#contact">Contact Support</Link>
+              <Link href="/book-a-demo">Book A Demo Call</Link>
             </Button>
           </div>
           <div className="md:col-span-2">

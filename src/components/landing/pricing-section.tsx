@@ -22,7 +22,7 @@ const tiers: PricingTier[] = [
     priceFrequency: '',
     description: "We tailor solutions for each business",
     features: ['Basic QR code loyalty', 'Unlimited Customers', 'Email support', 'Customizable rewards', 'Customer analytics'],
-    ctaText: 'Contact Us',
+    ctaText: 'Book A Demo Call',
   },
 ];
 
@@ -73,7 +73,7 @@ export function PricingSection() {
                   className={`w-full ${tier.isRecommended ? 'bg-[hsl(var(--pricing-recommended-badge-hsl))] hover:bg-[hsl(var(--pricing-recommended-badge-hsl))]/90 text-white' : 'bg-primary hover:bg-primary/90 text-primary-foreground'}`}
                   asChild
                 >
-                  <Link href="#demo">{tier.ctaText}</Link>
+                  <Link href="/book-a-demo">{tier.ctaText}</Link>
                 </Button>
               </CardFooter>
             </Card>

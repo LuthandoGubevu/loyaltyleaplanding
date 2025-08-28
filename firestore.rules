@@ -1,41 +1,37 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper function to check if the user is an admin.
-    // This can be expanded later to check for a role in the user's document.
+    
+    // A list of admin email addresses.
     function isAdmin() {
-      return request.auth != null && request.auth.token.email == 'lgubevu@gmail.com';
+      return request.auth.token.email in ['lgubevu@gmail.com', 'timesesethu6@gmail.com'];
     }
 
-    // Demo Requests:
-    // - Anyone can create (submit the form).
-    // - Only the admin can read the list of requests.
-    // - No one can update or delete them from the client-side.
+    // Rules for demo-requests collection
+    // - Allow anyone to create (submit the form)
+    // - Only allow admins to read the requests
+    // - Only admins can modify or delete requests
     match /demo-requests/{requestId} {
       allow read: if isAdmin();
-      allow create: if true;
-      allow update, delete: if false;
+      allow create: if true; // Anyone can submit a demo request
+      allow update, delete: if isAdmin();
     }
 
-    // User Data:
-    // This collection is not yet used but is anticipated.
-    // - A user can read and write to their own document.
-    // - The admin can read any user's document.
+    // Rules for users collection (placeholder for future use)
+    // - A user can only read/write their own data
+    // - Admins can read any user's data
     match /users/{userId} {
-      allow read: if isAdmin() || request.auth.uid == userId;
-      allow write: if request.auth.uid == userId;
+      allow read, update, delete: if request.auth.uid == userId || isAdmin();
+      allow create: if request.auth.uid == userId;
     }
     
-    // Stores Data:
-    // This collection is not yet used but is anticipated.
-    // - Any authenticated user can read the store list.
-    // - Only admins will be able to add/edit stores in the future.
+    // Rules for stores collection (placeholder for future use)
+    // - Allow any authenticated user to read/list stores
+    // - Only allow admins to create, update, or delete stores
     match /stores/{storeId} {
-       allow read: if request.auth != null;
-       allow write: if isAdmin();
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
     }
   }
 }

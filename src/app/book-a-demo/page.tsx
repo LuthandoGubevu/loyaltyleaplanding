@@ -2,7 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -19,8 +18,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ArrowLeft } from 'lucide-react';
-import { Logo } from '@/components/logo';
+import { Loader2 } from 'lucide-react';
+import { SiteHeader } from '@/components/site-header';
+import { SiteFooter } from '@/components/site-footer';
 
 const formSchema = z.object({
   businessName: z.string().min(2, { message: 'Business name must be at least 2 characters.' }),
@@ -62,113 +62,108 @@ export default function BookDemoPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center bg-muted/40 p-4">
-        <div className="absolute top-8 left-8">
-            <Logo />
-        </div>
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Book a Demo</CardTitle>
-          <CardDescription>
-            {isSubmitted
-              ? "Thank you! We'll be in touch soon."
-              : "Fill out the form below, and we'll contact you to schedule a demo."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {!isSubmitted ? (
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="businessName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Business Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., The Cozy Cafe" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="ownerName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Your Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., Jane Doe" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="name@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Your contact number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>How can we help you?</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Tell us a little about your business and what you're looking for."
-                          className="resize-none"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Submit Request
-                </Button>
-              </form>
-            </Form>
-          ) : (
-             <div className="text-center">
-                <p className="text-muted-foreground">You can now close this page or return to the homepage.</p>
-             </div>
-          )}
-           <div className="mt-4 text-center text-sm">
-                <Link href="/" passHref>
-                    <Button variant="ghost">
-                        <ArrowLeft className="mr-2 h-4 w-4"/>
-                        Back to Home
+    <div className="flex flex-col min-h-screen">
+      <SiteHeader />
+      <main className="flex-1">
+        <div className="flex flex-col items-center justify-center bg-muted/40 p-4 py-12 sm:py-24">
+          <Card className="w-full max-w-lg">
+            <CardHeader>
+              <CardTitle>Book a Demo</CardTitle>
+              <CardDescription>
+                {isSubmitted
+                  ? "Thank you! We'll be in touch soon."
+                  : "Fill out the form below, and we'll contact you to schedule a demo."}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!isSubmitted ? (
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="businessName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Business Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., The Cozy Cafe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="ownerName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Your Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., Jane Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email Address</FormLabel>
+                          <FormControl>
+                            <Input placeholder="name@example.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone Number (Optional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Your contact number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="message"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>How can we help you?</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Tell us a little about your business and what you're looking for."
+                              className="resize-none"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Submit Request
                     </Button>
-                </Link>
-            </div>
-        </CardContent>
-      </Card>
+                  </form>
+                </Form>
+              ) : (
+                <div className="text-center">
+                    <p className="text-muted-foreground">You can now close this page.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+      <SiteFooter />
     </div>
   );
 }

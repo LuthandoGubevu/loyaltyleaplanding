@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -21,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import { addDemoRequest } from '@/lib/mock-data';
 
 const formSchema = z.object({
   businessName: z.string().min(2, { message: 'Business name must be at least 2 characters.' }),
@@ -49,8 +51,8 @@ export default function BookDemoPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log('Demo Request Submitted:', values);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    addDemoRequest(values);
     
     toast({
       title: 'Request Sent!',

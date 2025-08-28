@@ -8,7 +8,7 @@ import { getAuth, signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from './ui/skeleton';
 
-export function AuthButtons() {
+export function AuthButtons({ className }: { className?: string }) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -29,13 +29,13 @@ export function AuthButtons() {
 
   if (user) {
     return (
-      <div className="flex flex-col sm:flex-row items-center gap-2">
-        <Button asChild>
+      <div className={`flex flex-col sm:flex-row items-center gap-2 ${className}`}>
+        <Button asChild className='w-full sm:w-auto'>
           <Link href={user.email === 'lgubevu@gmail.com' ? '/admin/dashboard' : '/customer/dashboard'}>
             Dashboard
           </Link>
         </Button>
-        <Button variant="secondary" onClick={handleLogout}>
+        <Button variant="secondary" onClick={handleLogout} className='w-full sm:w-auto'>
           Log Out
         </Button>
       </div>
@@ -43,11 +43,11 @@ export function AuthButtons() {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-2">
-      <Button asChild>
+    <div className={`flex flex-col sm:flex-row items-center gap-2 ${className}`}>
+      <Button asChild className='w-full sm:w-auto'>
         <Link href="/signup">Sign Up</Link>
       </Button>
-      <Button variant="secondary" asChild>
+      <Button variant="secondary" asChild className='w-full sm:w-auto'>
         <Link href="/login">Log In</Link>
       </Button>
     </div>

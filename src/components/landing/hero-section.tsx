@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { MaxWidthWrapper } from '@/components/max-width-wrapper';
 import Link from 'next/link';
 import { InstallPwaButton } from '@/hooks/use-pwa-install';
+import { AuthButtons } from '../auth-buttons';
 
 export function HeroSection() {
   return (
@@ -21,6 +22,9 @@ export function HeroSection() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                <InstallPwaButton />
+            </div>
+             <div className="mt-4 md:hidden">
+                <AuthButtons />
             </div>
           </div>
           <div className="flex justify-center items-center">

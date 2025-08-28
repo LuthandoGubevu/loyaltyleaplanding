@@ -47,9 +47,6 @@ export function SiteHeader() {
                       <Link href={item.href}>{item.label}</Link>
                     </Button>
                   ))}
-                  <div className="flex flex-col space-y-2">
-                    <AuthButtons />
-                  </div>
                 </div>
               </SheetContent>
             </Sheet>

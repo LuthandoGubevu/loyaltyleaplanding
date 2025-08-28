@@ -7,39 +7,27 @@ interface Testimonial {
   quote: string;
   name: string;
   title: string;
-  avatarUrl: string;
-  logoUrl?: string;
   stars: number;
-  companyName: string;
 }
 
 const testimonials: Testimonial[] = [
   {
-    quote: "Loyalty Leap transformed how we connect with customers. Repeat business is up 30%!",
-    name: "Sarah M.",
-    title: "Owner, The Cozy Cafe",
-    avatarUrl: "https://placehold.co/80x80.png",
-    logoUrl: "https://placehold.co/100x40.png?text=Cafe+Logo",
+    quote: "I love how easy it is to earn points! I got a free coffee last week just for my regular visits.",
+    name: "Alex S.",
+    title: "Loyal Customer",
     stars: 5,
-    companyName: "The Cozy Cafe",
   },
   {
-    quote: "Finally, a loyalty program that's easy for us and our clients. The branded site is a huge plus.",
-    name: "John B.",
-    title: "Stylist, Modern Cuts Salon",
-    avatarUrl: "https://placehold.co/80x80.png",
-    logoUrl: "https://placehold.co/100x40.png?text=Salon+Logo",
+    quote: "Finally, a rewards program that doesn't require another app on my phone. The web portal is super convenient.",
+    name: "Jordan B.",
+    title: "Frequent Shopper",
     stars: 5,
-    companyName: "Modern Cuts Salon",
   },
   {
-    quote: "The analytics are incredibly helpful. We now understand our customers better than ever.",
-    name: "Lisa K.",
-    title: "Manager, Bloom & Grow Florist",
-    avatarUrl: "https://placehold.co/80x80.png",
-    logoUrl: "https://placehold.co/100x40.png?text=Florist+Logo",
+    quote: "It's so satisfying to watch my points add up and get real rewards. It makes me want to shop local more often.",
+    name: "Taylor K.",
+    title: "Valued Patron",
     stars: 4,
-    companyName: "Bloom & Grow Florist",
   },
 ];
 
@@ -49,10 +37,10 @@ export function TestimonialsSection() {
       <MaxWidthWrapper>
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-[hsl(var(--testimonials-text-val))]">
-            Loved by Businesses Like Yours
+            Loved by Customers Like You
           </h2>
           <p className="mt-4 text-lg text-[hsl(var(--testimonials-text-val))] opacity-80 max-w-2xl mx-auto">
-            Hear from small business owners who are growing with Loyalty Leap.
+            Hear from happy customers enjoying the rewards at their favorite local spots.
           </p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -69,28 +57,10 @@ export function TestimonialsSection() {
                 </div>
                 <p className="text-[hsl(var(--testimonials-text-val))] italic mb-6 flex-grow">"{testimonial.quote}"</p>
                 <div className="flex items-center mt-auto pt-4 border-t border-border">
-                  <Image
-                    src={testimonial.avatarUrl}
-                    alt={testimonial.name}
-                    width={48}
-                    height={48}
-                    className="rounded-full mr-4"
-                    data-ai-hint="business owner avatar"
-                  />
                   <div>
                     <p className="font-semibold text-[hsl(var(--testimonials-text-val))]">{testimonial.name}</p>
                     <p className="text-sm text-[hsl(var(--testimonials-text-val))] opacity-70">{testimonial.title}</p>
                   </div>
-                  {testimonial.logoUrl && (
-                     <Image
-                        src={testimonial.logoUrl}
-                        alt={`${testimonial.companyName} logo`}
-                        width={80}
-                        height={32}
-                        className="ml-auto object-contain"
-                        data-ai-hint="company logo"
-                      />
-                  )}
                 </div>
               </CardContent>
             </Card>

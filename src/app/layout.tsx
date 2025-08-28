@@ -15,8 +15,8 @@ export const metadata: Metadata = {
   description: 'Loyalty Leap helps small businesses drive repeat visits with a white-labeled loyalty platform.',
   manifest: '/manifest.json',
   icons: {
-    icon: '/gift.png',
-    apple: '/gift.png',
+    icon: '/icons/192x192.png',
+    apple: '/icons/192x192.png',
   },
 };
 

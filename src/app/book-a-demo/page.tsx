@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState } from 'react';
@@ -22,7 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
-import { addDemoRequest } from '@/lib/mock-data';
+import { addDemoRequest } from '@/lib/firebase/firestore';
 
 const formSchema = z.object({
   businessName: z.string().min(2, { message: 'Business name must be at least 2 characters.' }),
@@ -50,17 +49,23 @@ export default function BookDemoPage() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    addDemoRequest(values);
-    
-    toast({
-      title: 'Request Sent!',
-      description: "We've received your request and will be in touch shortly.",
-    });
-    setIsLoading(false);
-    setIsSubmitted(true);
-    form.reset();
+    try {
+      await addDemoRequest(values);
+      toast({
+        title: 'Request Sent!',
+        description: "We've received your request and will be in touch shortly.",
+      });
+      setIsSubmitted(true);
+      form.reset();
+    } catch (error) {
+       toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'There was a problem submitting your request. Please try again.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

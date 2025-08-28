@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -9,26 +10,50 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
   } from "@/components/ui/accordion";
-import { getDemoRequests, DemoRequest } from "@/lib/mock-data";
+import { getDemoRequests } from "@/lib/firebase/firestore";
+import type { DemoRequestWithId } from "@/lib/firebase/firestore";
 import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
+
+function MessagesSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-64 mt-2" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="h-12 w-full rounded-md" />
+                ))}
+            </CardContent>
+        </Card>
+    )
+}
 
 export default function MessagesPage() {
-    const messages = getDemoRequests();
+    const [messages, setMessages] = useState<DemoRequestWithId[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchMessages = async () => {
+            setIsLoading(true);
+            const fetchedMessages = await getDemoRequests();
+            setMessages(fetchedMessages);
+            setIsLoading(false);
+        };
+        fetchMessages();
+    }, []);
+
+    if (isLoading) {
+        return <MessagesSkeleton />;
+    }
 
     return (
         <Card>
@@ -41,8 +66,8 @@ export default function MessagesPage() {
             <CardContent>
                 {messages.length > 0 ? (
                     <Accordion type="single" collapsible className="w-full">
-                        {messages.map((message, index) => (
-                            <AccordionItem value={`item-${index}`} key={index}>
+                        {messages.map((message) => (
+                            <AccordionItem value={message.id} key={message.id}>
                                 <AccordionTrigger>
                                     <div className="flex items-center justify-between w-full pr-4">
                                         <div className="flex items-center gap-4">
@@ -82,4 +107,3 @@ export default function MessagesPage() {
         </Card>
     );
 }
-

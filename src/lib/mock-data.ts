@@ -1,23 +1,13 @@
 
+import { DemoRequest, addDemoRequest, getDemoRequests as getFirestoreDemoRequests } from "./firebase/firestore";
 
 // All mock data has been wiped to prepare for real client onboarding.
 // In a real application, this data would be fetched from a database or API.
-
-export type DemoRequest = {
-    businessName: string;
-    ownerName: string;
-    email: string;
-    phone?: string;
-    message: string;
-    submittedAt: Date;
-}
 
 export const mockLoyaltyData = {
     userId: "demo_user",
     stores: []
   };
-
-export const mockMessages: DemoRequest[] = [];
   
   export function getLoyaltyData() {
     // In a real app, this would fetch from a backend.
@@ -29,18 +19,10 @@ export const mockMessages: DemoRequest[] = [];
     return mockLoyaltyData.stores.find(store => store.id === storeId);
   }
 
-  export function addDemoRequest(request: Omit<DemoRequest, 'submittedAt'>) {
-    const newRequest: DemoRequest = {
-        ...request,
-        submittedAt: new Date(),
-    };
-    mockMessages.unshift(newRequest); // Add to the beginning of the array
-    return newRequest;
-  }
-
-  export function getDemoRequests() {
-    return mockMessages;
-  }
+  // These functions now interact with Firestore but are kept here
+  // to minimize changes in the components that use them.
+  export { addDemoRequest, DemoRequest };
+  export const getDemoRequests = getFirestoreDemoRequests;
   
   // The type definitions remain to ensure type safety throughout the app.
   export type StoreLoyaltyData = {

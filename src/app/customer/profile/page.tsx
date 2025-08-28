@@ -53,7 +53,6 @@ export default function ProfilePage() {
                     <span>{customer.tier}</span>
                 </div>
             </div>
-            <InstallPwaButton />
         </CardContent>
       </Card>
     </div>

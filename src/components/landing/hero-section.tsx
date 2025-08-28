@@ -1,8 +1,11 @@
 
+'use client';
+
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { MaxWidthWrapper } from '@/components/max-width-wrapper';
 import Link from 'next/link';
+import { InstallPwaButton } from '@/hooks/use-pwa-install';
 
 export function HeroSection() {
   return (
@@ -17,9 +20,7 @@ export function HeroSection() {
               Loyalty Leap empowers small businesses like yours to effortlessly build customer loyalty, drive repeat visits, and boost revenue with a simple, effective, and fully branded rewards program.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-               <Button size="lg" asChild>
-                <Link href="/signup">Get Started For Free</Link>
-              </Button>
+               <InstallPwaButton />
               <Button size="lg" variant="secondary" asChild>
                 <Link href="/login">Log In</Link>
               </Button>

@@ -1,4 +1,6 @@
 
+'use client';
+
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -7,6 +9,7 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card";
+import { InstallPwaButton } from "@/hooks/use-pwa-install";
 import { Edit } from "lucide-react";
 import Link from "next/link";
   
@@ -50,6 +53,7 @@ export default function ProfilePage() {
                     <span>{customer.tier}</span>
                 </div>
             </div>
+            <InstallPwaButton />
         </CardContent>
       </Card>
     </div>

@@ -23,6 +23,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { auth } from '@/lib/firebase/config';
+import { createUserProfile } from '@/lib/firebase/firestore';
 
 const formSchema = z.object({
     email: z.string().email({ message: 'Invalid email address.' }),
@@ -50,7 +51,16 @@ export default function SignupPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
+
+      // Create a user profile document in Firestore
+      await createUserProfile(user.uid, {
+        email: user.email!,
+        role: 'customer', // Default role for new sign-ups
+        createdAt: new Date(),
+      });
+
       toast({
         title: 'Account Created',
         description: "You've been successfully signed up!",

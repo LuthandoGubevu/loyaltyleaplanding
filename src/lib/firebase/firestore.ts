@@ -1,6 +1,6 @@
 
 import { db } from './config';
-import { collection, addDoc, getDocs, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { collection, addDoc, getDocs, serverTimestamp, query, orderBy, doc, setDoc, getDoc } from 'firebase/firestore';
 
 export type DemoRequest = {
     businessName: string;
@@ -14,6 +14,39 @@ export type DemoRequestWithId = DemoRequest & {
     id: string;
     submittedAt: Date;
 };
+
+export type UserProfile = {
+    email: string;
+    role: 'admin' | 'customer';
+    createdAt: Date;
+    name?: string;
+};
+
+
+export async function createUserProfile(uid: string, data: UserProfile) {
+    try {
+        await setDoc(doc(db, "users", uid), data);
+    } catch (error) {
+        console.error("Error creating user profile: ", error);
+        throw new Error("Could not create user profile.");
+    }
+}
+
+export async function getUserRole(uid: string): Promise<'admin' | 'customer' | null> {
+    try {
+        const userDocRef = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+            return userDocSnap.data().role || 'customer';
+        } else {
+            console.warn("No such user document!");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error getting user role: ", error);
+        return null;
+    }
+}
 
 export async function addDemoRequest(request: DemoRequest) {
     try {

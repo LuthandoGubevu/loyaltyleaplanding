@@ -1,36 +1,55 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // A list of admin email addresses.
+  
+    // Helper function to check if a user is an admin
     function isAdmin() {
-      return request.auth.token.email in ['lgubevu@gmail.com', 'timesesethu6@gmail.com'];
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Rules for demo-requests collection
-    // - Allow anyone to create (submit the form)
-    // - Only allow admins to read the requests
-    // - Only admins can modify or delete requests
-    match /demo-requests/{requestId} {
-      allow read: if isAdmin();
-      allow create: if true; // Anyone can submit a demo request
-      allow update, delete: if isAdmin();
-    }
-
-    // Rules for users collection (placeholder for future use)
-    // - A user can only read/write their own data
-    // - Admins can read any user's data
+    // Rules for the 'users' collection
     match /users/{userId} {
-      allow read, update, delete: if request.auth.uid == userId || isAdmin();
+      // Any authenticated user can create their own user profile document.
       allow create: if request.auth.uid == userId;
+      
+      // A user can read their own profile. An admin can read any user's profile.
+      allow read: if request.auth.uid == userId || isAdmin();
+      
+      // A user can update their own profile data, but cannot change their role.
+      allow update: if request.auth.uid == userId && request.resource.data.role == resource.data.role;
+      
+      // An admin can update any user's profile, including changing their role.
+      allow update: if isAdmin();
+      
+      // Only an admin can delete a user document.
+      allow delete: if isAdmin();
+    }
+
+    // Rules for the 'demo-requests' collection
+    match /demo-requests/{requestId} {
+      // Anyone can create (submit) a demo request.
+      allow create: if true;
+      
+      // Only authenticated admins can read, update, or delete demo requests.
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Future-proofing for other collections (e.g., stores, rewards)
+    // You can add more specific rules here as your app grows.
+    
+    match /stores/{storeId} {
+      // Anyone authenticated can view stores
+      allow read: if request.auth != null;
+      // Only admins can create, update, or delete stores
+      allow write: if isAdmin();
     }
     
-    // Rules for stores collection (placeholder for future use)
-    // - Allow any authenticated user to read/list stores
-    // - Only allow admins to create, update, or delete stores
-    match /stores/{storeId} {
+    match /rewards/{rewardId} {
+       // Anyone authenticated can view rewards
       allow read: if request.auth != null;
+      // Only admins can create, update, or delete rewards
       allow write: if isAdmin();
     }
   }

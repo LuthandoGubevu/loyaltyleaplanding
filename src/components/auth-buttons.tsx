@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { Skeleton } from './ui/skeleton';
 
 export function AuthButtons({ className }: { className?: string }) {
-  const { user, loading } = useAuth();
+  const { user, loading, role } = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -31,7 +31,7 @@ export function AuthButtons({ className }: { className?: string }) {
     return (
       <div className={`flex flex-col sm:flex-row items-center gap-2 ${className}`}>
         <Button asChild className='w-full sm:w-auto'>
-          <Link href={user.email === 'lgubevu@gmail.com' ? '/admin/dashboard' : '/customer/dashboard'}>
+          <Link href={role === 'admin' ? '/admin/dashboard' : '/customer/dashboard'}>
             Dashboard
           </Link>
         </Button>

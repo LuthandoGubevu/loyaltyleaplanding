@@ -23,6 +23,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { auth } from '@/lib/firebase/config';
+import { getUserRole } from '@/lib/firebase/firestore';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -48,12 +49,14 @@ export default function LoginPage() {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
       
+      const role = await getUserRole(user.uid);
+
       toast({
         title: 'Login Successful',
         description: 'Welcome back!',
       });
 
-      if (user.email === 'lgubevu@gmail.com') {
+      if (role === 'admin') {
         router.push('/admin/dashboard');
       } else {
         router.push('/customer/dashboard');

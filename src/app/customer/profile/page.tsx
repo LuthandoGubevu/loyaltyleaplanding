@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -9,18 +10,82 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card";
-import { InstallPwaButton } from "@/hooks/use-pwa-install";
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
+import { useAuth } from '@/hooks/use-auth';
+import type { UserProfile } from '@/lib/firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
+import { format } from 'date-fns';
 import { Edit } from "lucide-react";
 import Link from "next/link";
   
-// Mock Data removed for a real client
-const customer = {
-  name: "New Customer",
-  email: "customer@example.com",
-  tier: "Bronze",
-};
+type DisplayProfile = Omit<UserProfile, 'createdAt' | 'dob'> & {
+    createdAt: string;
+    dob?: string;
+}
+
+function ProfileSkeleton() {
+    return (
+      <div className="flex-1 p-4 md:p-6 max-w-lg mx-auto">
+        <Card>
+          <CardHeader className="flex flex-row items-start sm:items-center">
+              <div className="grid gap-2 flex-1">
+                <Skeleton className="h-8 w-32" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+              <Skeleton className="h-9 w-28" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-2/3" />
+            <Skeleton className="h-6 w-1/2" />
+          </CardContent>
+        </Card>
+      </div>
+    )
+}
+
 
 export default function ProfilePage() {
+    const { user } = useAuth();
+    const [profile, setProfile] = useState<DisplayProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            if (!user) {
+                setLoading(false);
+                return;
+            };
+
+            const docRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data() as UserProfile;
+                setProfile({
+                    ...data,
+                    createdAt: data.createdAt ? format(data.createdAt, 'PPP') : 'N/A',
+                    dob: data.dob ? format(data.dob, 'PPP') : 'Not provided',
+                });
+            } else {
+                console.log("No such document!");
+            }
+            setLoading(false);
+        };
+
+        fetchProfile();
+    }, [user]);
+
+    if (loading) {
+        return <ProfileSkeleton />;
+    }
+
+    if (!profile) {
+        return <p>No profile found.</p>
+    }
+
   return (
     <div className="flex-1 p-4 md:p-6 max-w-lg mx-auto">
       <Card>
@@ -39,18 +104,26 @@ export default function ProfilePage() {
             </Button>
         </CardHeader>
         <CardContent>
-            <div className="grid gap-2 text-sm sm:text-base">
-                <div className="flex items-center">
-                    <span className="font-semibold w-24">Name:</span>
-                    <span>{customer.name}</span>
+            <div className="grid gap-4 text-sm sm:text-base">
+                <div className="grid grid-cols-3 items-center">
+                    <span className="font-semibold text-muted-foreground">Name:</span>
+                    <span className="col-span-2">{profile.firstName} {profile.lastName}</span>
                 </div>
-                 <div className="flex items-center">
-                    <span className="font-semibold w-24">Email:</span>
-                    <span>{customer.email}</span>
+                 <div className="grid grid-cols-3 items-center">
+                    <span className="font-semibold text-muted-foreground">Email:</span>
+                    <span className="col-span-2">{profile.email}</span>
                 </div>
-                <div className="flex items-center">
-                    <span className="font-semibold w-24">Tier:</span>
-                    <span>{customer.tier}</span>
+                <div className="grid grid-cols-3 items-center">
+                    <span className="font-semibold text-muted-foreground">Date of Birth:</span>
+                    <span className="col-span-2">{profile.dob}</span>
+                </div>
+                 <div className="grid grid-cols-3 items-center">
+                    <span className="font-semibold text-muted-foreground">Marketing:</span>
+                    <span className="col-span-2">{profile.marketingOptIn ? 'Subscribed' : 'Not Subscribed'}</span>
+                </div>
+                <div className="grid grid-cols-3 items-center">
+                    <span className="font-semibold text-muted-foreground">Member Since:</span>
+                    <span className="col-span-2">{profile.createdAt}</span>
                 </div>
             </div>
         </CardContent>

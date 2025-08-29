@@ -19,13 +19,19 @@ export type UserProfile = {
     email: string;
     role: 'admin' | 'customer';
     createdAt: Date;
-    name?: string;
+    firstName?: string;
+    lastName?: string;
+    dob?: Date;
+    marketingOptIn?: boolean;
 };
 
 
-export async function createUserProfile(uid: string, data: UserProfile) {
+export async function createUserProfile(uid: string, data: Omit<UserProfile, 'createdAt' | 'role'> & { role: 'admin' | 'customer' }) {
     try {
-        await setDoc(doc(db, "users", uid), data);
+        await setDoc(doc(db, "users", uid), {
+            ...data,
+            createdAt: new Date(),
+        });
     } catch (error) {
         console.error("Error creating user profile: ", error);
         throw new Error("Could not create user profile.");

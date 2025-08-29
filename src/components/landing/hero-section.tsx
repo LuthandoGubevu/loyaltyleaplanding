@@ -15,10 +15,10 @@ export function HeroSection() {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="text-center md:text-left">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold !text-white drop-shadow-md">
-              Turn One-Time Shoppers into Loyal Customers
+              Get Rewarded for Shopping Local
             </h1>
             <p className="mt-6 text-lg md:text-xl !text-white/90 drop-shadow-sm max-w-xl mx-auto md:mx-0">
-              Loyalty Leap empowers small businesses like yours to effortlessly build customer loyalty, drive repeat visits, and boost revenue with a simple, effective, and fully branded rewards program.
+              With Loyalty Leap, earning points at your favorite cafes, boutiques, and shops is simple. No app needed—just scan and save every time you support a local business.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                <InstallPwaButton />

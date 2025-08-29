@@ -32,10 +32,10 @@ export function PricingSection() {
       <MaxWidthWrapper>
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-            Flexible Pricing for Every Business
+            Onboard Your Business, Unlock Your Customer Base
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Choose the plan that’s right for you and start building customer loyalty today. No hidden fees.
+            To get access to our network of shoppers, you first need to bring your business onto the Loyalty Leap platform. Our team will help you set up your custom-branded loyalty program.
           </p>
         </div>
         <div className="grid lg:grid-cols-3 gap-8 items-stretch justify-center">
@@ -83,4 +83,3 @@ export function PricingSection() {
     </section>
   );
 }
-

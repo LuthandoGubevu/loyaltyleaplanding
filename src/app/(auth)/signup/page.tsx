@@ -1,19 +1,23 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { Button } from '@/components/ui/button';
-import { Calendar } from "@/components/ui/calendar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import {
   Form,
   FormControl,
@@ -25,7 +29,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase/config';
@@ -44,10 +47,21 @@ const formSchema = z.object({
     path: ["confirmPassword"],
 });
 
+type DobState = {
+  day: string;
+  month: string;
+  year: string;
+}
+
+const years = Array.from({ length: new Date().getFullYear() - 1939 }, (_, i) => String(new Date().getFullYear() - i));
+const months = Array.from({ length: 12 }, (_, i) => ({ value: String(i), label: new Date(2000, i).toLocaleString('default', { month: 'long' }) }));
+
 export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [dob, setDob] = useState<DobState>({ day: '', month: '', year: '' });
+  const [days, setDays] = useState<string[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,6 +74,24 @@ export default function SignupPage() {
       marketingOptIn: false,
     },
   });
+
+  useEffect(() => {
+    const { year, month } = dob;
+    if (year && month) {
+      const daysInMonth = new Date(Number(year), Number(month) + 1, 0).getDate();
+      setDays(Array.from({ length: daysInMonth }, (_, i) => String(i + 1)));
+    } else {
+      setDays(Array.from({ length: 31 }, (_, i) => String(i + 1)));
+    }
+  }, [dob.year, dob.month]);
+  
+  useEffect(() => {
+      if (dob.year && dob.month && dob.day) {
+          const newDate = new Date(Number(dob.year), Number(dob.month), Number(dob.day));
+          form.setValue('dob', newDate, { shouldValidate: true });
+      }
+  }, [dob, form]);
+
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -147,42 +179,34 @@ export default function SignupPage() {
                 control={form.control}
                 name="dob"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem>
                     <FormLabel>Date of birth (Optional)</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          captionLayout="dropdown-buttons"
-                          fromYear={1940}
-                          toYear={new Date().getFullYear()}
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <div className="grid grid-cols-3 gap-2">
+                       <Select onValueChange={(value) => setDob(prev => ({...prev, month: value}))} value={dob.month}>
+                         <SelectTrigger>
+                           <SelectValue placeholder="Month" />
+                         </SelectTrigger>
+                         <SelectContent>
+                           {months.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
+                         </SelectContent>
+                       </Select>
+                       <Select onValueChange={(value) => setDob(prev => ({...prev, day: value}))} value={dob.day}>
+                         <SelectTrigger>
+                           <SelectValue placeholder="Day" />
+                         </SelectTrigger>
+                         <SelectContent>
+                           {days.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                         </SelectContent>
+                       </Select>
+                       <Select onValueChange={(value) => setDob(prev => ({...prev, year: value}))} value={dob.year}>
+                         <SelectTrigger>
+                           <SelectValue placeholder="Year" />
+                         </SelectTrigger>
+                         <SelectContent>
+                           {years.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}
+                         </SelectContent>
+                       </Select>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -251,3 +275,5 @@ export default function SignupPage() {
     </Card>
   );
 }
+
+    

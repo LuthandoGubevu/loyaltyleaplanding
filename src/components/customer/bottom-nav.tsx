@@ -40,8 +40,9 @@ export function BottomNav() {
 
           if (item.isCenter) {
             return (
-              <Link href={item.href || '#'} key={item.href} className="-mt-8">
-                <div
+              <div key={item.href} className="-mt-8">
+                <Link
+                  href={item.href || '#'}
                   className={cn(
                     "flex items-center justify-center w-16 h-16 rounded-full bg-primary text-primary-foreground shadow-lg transform transition-transform hover:scale-105",
                     isActive && "ring-4 ring-primary/30"
@@ -49,14 +50,14 @@ export function BottomNav() {
                 >
                   <item.icon className="h-8 w-8" />
                   <span className="sr-only">{item.label}</span>
-                </div>
-              </Link>
+                </Link>
+              </div>
             );
           }
           return (
             <NavComponent
-              {...navProps}
               key={item.href}
+              {...navProps}
               className={cn(
                 "flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-16",
                 isActive && "text-primary"

@@ -6,6 +6,8 @@ import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from 'lucide-react';
 import { AuthButtons } from './auth-buttons';
+import { InstallPwaButton } from '@/hooks/use-pwa-install';
+import { Separator } from './ui/separator';
 
 export function SiteHeader() {
   const navItems = [
@@ -40,13 +42,19 @@ export function SiteHeader() {
                 <SheetHeader className="text-left">
                   <SheetTitle className="sr-only">Navigation</SheetTitle>
                 </SheetHeader>
-                <div className="flex flex-col space-y-4 p-4">
+                <div className="flex flex-col space-y-4 p-4 h-full">
                   <Logo />
-                  {navItems.map((item) => (
-                    <Button variant="ghost" asChild key={item.label} className="justify-start">
-                      <Link href={item.href}>{item.label}</Link>
-                    </Button>
-                  ))}
+                  <div className="flex flex-col space-y-2 mt-4">
+                    {navItems.map((item) => (
+                        <Button variant="ghost" asChild key={item.label} className="justify-start">
+                        <Link href={item.href}>{item.label}</Link>
+                        </Button>
+                    ))}
+                  </div>
+                  <div className="mt-auto space-y-4 pt-4 border-t">
+                     <AuthButtons className="flex-col w-full" />
+                     <InstallPwaButton />
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

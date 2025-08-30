@@ -21,10 +21,10 @@ export function HeroSection() {
               With Loyalty Leap, earning points at your favorite cafes, boutiques, and shops is simple. No app needed—just scan and save every time you support a local business.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-               <InstallPwaButton />
+               <AuthButtons />
             </div>
-             <div className="mt-4 md:hidden">
-                <AuthButtons />
+            <div className="mt-4 flex justify-center md:justify-start">
+                <InstallPwaButton />
             </div>
           </div>
           <div className="flex justify-center items-center">

@@ -1,4 +1,10 @@
 
+'use client';
+
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase/config";
+import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,16 +17,23 @@ import {
 } from "@/components/ui/card";
 import { Gift } from "lucide-react";
 
-// Mock Data removed
-const customer = {
-  name: "New Customer",
-  totalPoints: 0,
-  tier: "Bronze",
-};
-
 const availableRewards: any[] = [];
 
 export default function RewardsPage() {
+  const { user } = useAuth();
+  const [totalPoints, setTotalPoints] = useState(0);
+
+  useEffect(() => {
+    const fetchPoints = async () => {
+      if (!user) return;
+      const docSnap = await getDoc(doc(db, "users", user.uid));
+      if (docSnap.exists()) {
+        setTotalPoints(docSnap.data().totalPoints ?? 0);
+      }
+    };
+    fetchPoints();
+  }, [user]);
+
   return (
     <div className="flex-1 p-4 md:p-6">
       <Card>
@@ -47,7 +60,7 @@ export default function RewardsPage() {
                 <CardFooter>
                   <Button
                     size="sm"
-                    disabled={customer.totalPoints < reward.points}
+                    disabled={totalPoints < reward.points}
                     className="w-full"
                   >
                     Redeem

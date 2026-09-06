@@ -27,7 +27,7 @@ export default function SettingsPage() {
                 <form className="grid gap-4">
                     <div className="grid gap-2">
                         <Label htmlFor="business-name">Business Name</Label>
-                        <Input id="business-name" defaultValue="Loyalty Leap Demo" />
+                        <Input id="business-name" placeholder="Your business name" />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="logo">Logo</Label>
@@ -45,7 +45,7 @@ export default function SettingsPage() {
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="contact-email">Contact Email</Label>
-                        <Input id="contact-email" type="email" defaultValue="contact@loyaltyleap.com" />
+                        <Input id="contact-email" type="email" placeholder="contact@yourbusiness.com" />
                     </div>
                     <Button type="submit" className="w-fit">Save Changes</Button>
                 </form>
@@ -55,18 +55,18 @@ export default function SettingsPage() {
             <CardHeader>
                 <CardTitle>App Configuration</CardTitle>
                 <CardDescription>
-                    Mock settings for app behavior.
+                    Configure how your loyalty program behaves.
                 </CardDescription>
             </CardHeader>
             <CardContent>
                  <form className="grid gap-4">
                     <div className="grid gap-2">
                         <Label htmlFor="points-ratio">Points Ratio (per R1)</Label>
-                        <Input id="points-ratio" type="number" defaultValue="1" />
+                        <Input id="points-ratio" type="number" placeholder="1" />
                     </div>
                     <div className="grid gap-2">
                         <Label>POS Integration</Label>
-                        <p className="text-sm text-muted-foreground">Status: <span className="font-semibold text-green-600">Connected</span></p>
+                        <p className="text-sm text-muted-foreground">Status: <span className="font-semibold text-muted-foreground">Not Connected</span></p>
                     </div>
                     <Button type="submit" className="w-fit">Save Configuration</Button>
                  </form>

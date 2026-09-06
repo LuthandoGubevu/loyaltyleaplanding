@@ -61,11 +61,10 @@ export function ScanContent() {
       setScanResult(null);
 
       const qrCodeSuccessCallback = (decodedText: string) => {
-        const pointsEarned = Math.floor(Math.random() * 50) + 10;
-        setScanResult(`Simulated scan for ${store?.name || 'a store'}. You earned ${pointsEarned} points!`);
+        setScanResult(`Code scanned successfully${store?.name ? ` at ${store.name}` : ''}. Point tracking for this store is not set up yet.`);
         toast({
-          title: "Points Earned!",
-          description: `You've earned ${pointsEarned} points at ${store?.name || 'this store'}!`,
+          title: "Scan Recorded",
+          description: `We scanned your code${store?.name ? ` at ${store.name}` : ''}, but this store hasn't connected a rewards system yet.`,
         });
         setIsScanning(false);
         if (html5Qrcode.isScanning) {
@@ -141,7 +140,7 @@ export function ScanContent() {
                 {scanResult && (
                     <div className="mt-4 text-center">
                         <Alert variant="default" className="border-green-500 text-green-700">
-                            <AlertTitle className="text-green-600">Scan Successful!</AlertTitle>
+                            <AlertTitle className="text-green-600">Scan Complete</AlertTitle>
                             <AlertDescription className="break-words">
                                 {scanResult}
                             </AlertDescription>

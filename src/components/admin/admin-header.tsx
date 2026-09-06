@@ -14,12 +14,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { StoreSwitcher } from "@/components/admin/store-switcher"
-
 export function AdminHeader() {
   return (
     <>
-        <StoreSwitcher />
         <div className="ml-auto flex items-center gap-4">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>

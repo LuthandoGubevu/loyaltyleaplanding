@@ -32,7 +32,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase/config';
-import { createUserProfile } from '@/lib/firebase/firestore';
+import { createUserProfile, findPendingBusinessByEmail, claimBusiness } from '@/lib/firebase/firestore';
+import { isStaffEmail } from '@/lib/roles';
 
 const formSchema = z.object({
     firstName: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
@@ -101,21 +102,36 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
-      // Create a user profile document in Firestore
-      await createUserProfile(user.uid, {
+      const baseProfile = {
         email: user.email!,
-        role: 'customer',
         firstName: values.firstName,
         lastName: values.lastName,
         dob: values.dob,
         marketingOptIn: values.marketingOptIn,
-      });
+      };
+
+      let redirectTo = '/customer/dashboard';
+
+      if (isStaffEmail(user.email)) {
+        await createUserProfile(user.uid, { ...baseProfile, role: 'staff' });
+        redirectTo = '/staff';
+      } else {
+        const pendingBusiness = await findPendingBusinessByEmail(user.email!);
+        if (pendingBusiness) {
+          await createUserProfile(user.uid, { ...baseProfile, role: 'admin', businessId: pendingBusiness.id });
+          await claimBusiness(pendingBusiness.id, user.uid);
+          redirectTo = '/admin/dashboard';
+        } else {
+          await createUserProfile(user.uid, { ...baseProfile, role: 'customer' });
+          redirectTo = '/customer/dashboard';
+        }
+      }
 
       toast({
         title: 'Account Created',
         description: "You've been successfully signed up!",
       });
-      router.push('/customer/dashboard');
+      router.push(redirectTo);
     } catch (error: any) {
       toast({
         variant: 'destructive',

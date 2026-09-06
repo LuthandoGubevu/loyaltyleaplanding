@@ -4,36 +4,91 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
   
-    // Helper function to check if a user is an admin
+    // Platform staff (super-admin) — restricted to two named accounts.
+    // Checked directly against the verified auth token email, independent of
+    // any Firestore document, so staff access can never be broken by a bad
+    // write to a user's profile.
+    function isStaff() {
+      return request.auth != null &&
+        request.auth.token.email.lower() in ['timlasive@gmail.com', 'lgubevu@gmail.com'];
+    }
+
+    // Helper function to check if a user is a business admin
     function isAdmin() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Rules for the 'users' collection
-    match /users/{userId} {
-      // Any authenticated user can create their own user profile document.
-      allow create: if request.auth.uid == userId;
-      
-      // A user can read their own profile. An admin can read any user's profile.
-      allow read: if request.auth.uid == userId || isAdmin();
-      
-      // A user can update their own profile data, but cannot change their role.
-      allow update: if request.auth.uid == userId && request.resource.data.role == resource.data.role;
-      
-      // An admin can update any user's profile, including changing their role.
-      allow update: if isAdmin();
-      
-      // Only an admin can delete a user document.
-      allow delete: if isAdmin();
+    function myBusinessId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.businessId;
     }
 
-    // Rules for the 'demo-requests' collection
+    // Rules for the 'users' collection
+    match /users/{userId} {
+      // A user can create their own profile document, but the role they
+      // claim is constrained: 'staff' only for the allowed staff emails,
+      // 'admin' only alongside a businessId, 'customer' always allowed.
+      allow create: if request.auth.uid == userId && (
+        (request.resource.data.role == 'staff' && isStaff()) ||
+        (request.resource.data.role == 'admin' && request.resource.data.businessId is string) ||
+        (request.resource.data.role == 'customer')
+      );
+
+      // A user can read their own profile. Staff or a business admin can read any user's profile.
+      allow read: if request.auth.uid == userId || isStaff() || isAdmin();
+
+      // A user can update their own profile data, but cannot change their role.
+      allow update: if request.auth.uid == userId && request.resource.data.role == resource.data.role;
+
+      // Staff can update any user's profile, including changing their role.
+      allow update: if isStaff();
+
+      // Only staff can delete a user document.
+      allow delete: if isStaff();
+    }
+
+    // Rules for the 'demo-requests' collection. These are leads for Loyalty
+    // Leap itself (submitted via the public "Book a Demo" form) — not data
+    // belonging to any one client business, so only staff may read them.
     match /demo-requests/{requestId} {
       // Anyone can create (submit) a demo request.
       allow create: if true;
-      
-      // Only authenticated admins can read, update, or delete demo requests.
-      allow read, update, delete: if isAdmin();
+
+      // Only platform staff can read, update, or delete demo requests.
+      allow read, update, delete: if isStaff();
+    }
+
+    // Rules for the 'businesses' collection — one document per client business.
+    match /businesses/{businessId} {
+      // Staff can read any business. A business admin can read their own
+      // business. A brand-new signed-up user can read a business whose
+      // pending assignment matches their own verified email, so the signup
+      // flow can find (only) their own pending assignment.
+      allow read: if isStaff()
+        || (request.auth != null && myBusinessId() == businessId)
+        || (request.auth != null && request.auth.token.email.lower() == resource.data.assignedAdminEmail);
+
+      // Only staff can onboard or remove a business.
+      allow create, delete: if isStaff();
+
+      allow update: if isStaff()
+        // The one-time "claim" transition at signup: a brand-new user may
+        // only flip adminUid from null to themself, only if their verified
+        // email matches this business's assigned admin email, only when
+        // nothing else on the document changes.
+        || (
+          request.auth != null
+          && resource.data.adminUid == null
+          && request.resource.data.adminUid == request.auth.uid
+          && request.auth.token.email.lower() == resource.data.assignedAdminEmail
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['adminUid', 'status'])
+          && request.resource.data.status == 'active'
+        )
+        // The owning admin may update their own business's basic profile
+        // fields, but not their plan, assignment, or claim state.
+        || (
+          isAdmin() && resource.data.adminUid == request.auth.uid
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['adminUid', 'assignedAdminEmail', 'plan', 'status'])
+        );
     }
 
     // Future-proofing for other collections (e.g., stores, rewards)

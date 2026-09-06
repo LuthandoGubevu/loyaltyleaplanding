@@ -21,7 +21,7 @@ import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 
 
-function MessagesSkeleton() {
+function DemoRequestsSkeleton() {
     return (
         <Card>
             <CardHeader>
@@ -37,22 +37,22 @@ function MessagesSkeleton() {
     )
 }
 
-export default function MessagesPage() {
-    const [messages, setMessages] = useState<DemoRequestWithId[]>([]);
+export default function StaffDemoRequestsPage() {
+    const [requests, setRequests] = useState<DemoRequestWithId[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchMessages = async () => {
+        const fetchRequests = async () => {
             setIsLoading(true);
-            const fetchedMessages = await getDemoRequests();
-            setMessages(fetchedMessages);
+            const fetched = await getDemoRequests();
+            setRequests(fetched);
             setIsLoading(false);
         };
-        fetchMessages();
+        fetchRequests();
     }, []);
 
     if (isLoading) {
-        return <MessagesSkeleton />;
+        return <DemoRequestsSkeleton />;
     }
 
     return (
@@ -60,38 +60,38 @@ export default function MessagesPage() {
             <CardHeader>
                 <CardTitle>Demo Requests</CardTitle>
                 <CardDescription>
-                    A list of all submitted demo requests from potential clients.
+                    Every demo request submitted by a prospective business through the public site.
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                {messages.length > 0 ? (
+                {requests.length > 0 ? (
                     <Accordion type="single" collapsible className="w-full">
-                        {messages.map((message) => (
-                            <AccordionItem value={message.id} key={message.id}>
+                        {requests.map((request) => (
+                            <AccordionItem value={request.id} key={request.id}>
                                 <AccordionTrigger>
                                     <div className="flex items-center justify-between w-full pr-4">
                                         <div className="flex items-center gap-4">
                                             <div className="grid gap-1 text-left">
-                                                <p className="text-sm font-medium leading-none">{message.businessName}</p>
-                                                <p className="text-sm text-muted-foreground">{message.ownerName} - {message.email}</p>
+                                                <p className="text-sm font-medium leading-none">{request.businessName}</p>
+                                                <p className="text-sm text-muted-foreground">{request.ownerName} - {request.email}</p>
                                             </div>
                                         </div>
                                         <div className="text-sm text-muted-foreground text-right">
-                                            {format(new Date(message.submittedAt), "PPP p")}
+                                            {format(new Date(request.submittedAt), "PPP p")}
                                         </div>
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent>
                                     <div className="p-4 bg-muted/50 rounded-md">
-                                        {message.phone && (
+                                        {request.phone && (
                                             <p className="text-sm mb-2">
-                                                <strong className="font-semibold">Phone:</strong> {message.phone}
+                                                <strong className="font-semibold">Phone:</strong> {request.phone}
                                             </p>
                                         )}
                                         <p className="text-sm whitespace-pre-wrap">
                                             <strong className="font-semibold">Message:</strong>
                                             <br />
-                                            {message.message}
+                                            {request.message}
                                         </p>
                                     </div>
                                 </AccordionContent>
@@ -100,7 +100,7 @@ export default function MessagesPage() {
                     </Accordion>
                 ) : (
                     <div className="text-center text-muted-foreground py-12">
-                        No messages yet.
+                        No demo requests yet.
                     </div>
                 )}
             </CardContent>

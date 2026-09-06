@@ -31,7 +31,7 @@ export function AuthButtons({ className }: { className?: string }) {
     return (
       <div className={`flex flex-col sm:flex-row items-center gap-2 ${className}`}>
         <Button asChild className='w-full sm:w-auto'>
-          <Link href={role === 'admin' ? '/admin/dashboard' : '/customer/dashboard'}>
+          <Link href={role === 'staff' ? '/staff' : role === 'admin' ? '/admin/dashboard' : '/customer/dashboard'}>
             Dashboard
           </Link>
         </Button>

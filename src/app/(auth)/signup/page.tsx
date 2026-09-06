@@ -1,12 +1,12 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
@@ -57,8 +57,10 @@ type DobState = {
 const years = Array.from({ length: new Date().getFullYear() - 1939 }, (_, i) => String(new Date().getFullYear() - i));
 const months = Array.from({ length: 12 }, (_, i) => ({ value: String(i), label: new Date(2000, i).toLocaleString('default', { month: 'long' }) }));
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectParam = searchParams.get('redirect');
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [dob, setDob] = useState<DobState>({ day: '', month: '', year: '' });
@@ -131,7 +133,7 @@ export default function SignupPage() {
         title: 'Account Created',
         description: "You've been successfully signed up!",
       });
-      router.push(redirectTo);
+      router.push(redirectParam || redirectTo);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -303,11 +305,19 @@ export default function SignupPage() {
         </Form>
         <div className="mt-4 text-center text-sm">
           Already have an account?{' '}
-          <Link href="/login" passHref>
+          <Link href={redirectParam ? `/login?redirect=${encodeURIComponent(redirectParam)}` : '/login'} passHref>
             <span className="underline cursor-pointer">Log in</span>
           </Link>
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
   );
 }

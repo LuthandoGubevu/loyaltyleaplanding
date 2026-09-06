@@ -32,11 +32,6 @@ export function BottomNav() {
           const isActive = item.isAction ? false : (item.href === '/customer/dashboard'
             ? pathname === item.href || pathname.startsWith('/customer/store')
             : pathname === item.href);
-            
-          const NavComponent = item.isAction ? 'button' : Link;
-          const navProps = item.isAction 
-            ? { onClick: handleLogout } 
-            : { href: item.href };
 
           if (item.isCenter) {
             return (
@@ -54,18 +49,25 @@ export function BottomNav() {
               </div>
             );
           }
+          const itemClassName = cn(
+            "flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-16",
+            isActive && "text-primary"
+          );
+
+          if (item.isAction) {
+            return (
+              <button key={item.href} onClick={handleLogout} className={itemClassName}>
+                <item.icon className="h-6 w-6 mb-1" />
+                <span className="text-xs font-medium">{item.label}</span>
+              </button>
+            );
+          }
+
           return (
-            <NavComponent
-              key={item.href}
-              {...navProps}
-              className={cn(
-                "flex flex-col items-center justify-center text-muted-foreground hover:text-primary transition-colors w-16",
-                isActive && "text-primary"
-              )}
-            >
+            <Link key={item.href} href={item.href} className={itemClassName}>
               <item.icon className="h-6 w-6 mb-1" />
               <span className="text-xs font-medium">{item.label}</span>
-            </NavComponent>
+            </Link>
           );
         })}
       </div>

@@ -91,6 +91,56 @@ service cloud.firestore {
         );
     }
 
+    // Rules for 'businesses/{businessId}/members/{uid}' — a customer's points
+    // balance at one business. A customer's own client is the only thing
+    // that ever writes here (no server exists), so the rules themselves are
+    // the entire enforcement: the points delta and the cooldown window are
+    // both verified against the business's own configured values, not
+    // trusted from the client.
+    match /businesses/{businessId}/members/{uid} {
+      // Staff, the owning business admin, or the member themself can read it.
+      allow read: if isStaff()
+        || (request.auth != null && request.auth.uid == uid)
+        || (isAdmin() && myBusinessId() == businessId);
+
+      // First-ever scan at this business: the doc may only be created with
+      // exactly one scan's worth of points.
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.points ==
+             get(/databases/$(database)/documents/businesses/$(businessId)).data.pointsPerScan
+        && request.resource.data.lastScanAt == request.time;
+
+      // Every later scan: points may only increase by exactly one scan's
+      // worth, only once the business's cooldown has elapsed since the
+      // member's last recorded scan, and nothing else on the doc may change.
+      allow update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.points ==
+             resource.data.points +
+             get(/databases/$(database)/documents/businesses/$(businessId)).data.pointsPerScan
+        && request.resource.data.lastScanAt == request.time
+        && request.time > resource.data.lastScanAt +
+             duration.value(get(/databases/$(database)/documents/businesses/$(businessId)).data.scanCooldownHours, 'h')
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points', 'lastScanAt']);
+
+      // Nobody deletes a points balance from the client.
+      allow delete: if false;
+    }
+
+    // Rules for 'businesses/{businessId}/scans/{scanId}' — an append-only
+    // audit log of every successful scan, one doc per scan.
+    match /businesses/{businessId}/scans/{scanId} {
+      allow read: if isStaff() || (isAdmin() && myBusinessId() == businessId);
+
+      allow create: if request.auth != null
+        && request.resource.data.customerUid == request.auth.uid
+        && request.resource.data.pointsAwarded ==
+             get(/databases/$(database)/documents/businesses/$(businessId)).data.pointsPerScan
+        && request.resource.data.scannedAt == request.time;
+
+      // Append-only: no editing or deleting a past scan record.
+      allow update, delete: if false;
+    }
+
     // Future-proofing for other collections (e.g., stores, rewards)
     // You can add more specific rules here as your app grows.
     

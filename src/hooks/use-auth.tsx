@@ -4,7 +4,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getUserProfile } from '@/lib/firebase/firestore';
 import { isStaffEmail, type Role } from '@/lib/roles';
@@ -82,6 +82,7 @@ function roleHome(role: Role | null): string {
 const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode, allowedRoles?: Role[] }) => {
   const { user, loading, role } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   const isAllowed = !allowedRoles || (role !== null && allowedRoles.includes(role));
 
@@ -89,14 +90,15 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode, allow
     if (loading) return;
 
     if (!user) {
-      router.push('/login');
+      const here = pathname + (typeof window !== 'undefined' ? window.location.search : '');
+      router.push(`/login?redirect=${encodeURIComponent(here)}`);
       return;
     }
 
     if (!isAllowed) {
       router.push(roleHome(role));
     }
-  }, [user, loading, role, router, isAllowed]);
+  }, [user, loading, role, router, isAllowed, pathname]);
 
   if (loading || !user || !isAllowed) {
     return (

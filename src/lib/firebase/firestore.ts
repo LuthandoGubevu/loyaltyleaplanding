@@ -1,6 +1,6 @@
 
 import { db } from './config';
-import { collection, addDoc, getDocs, serverTimestamp, query, orderBy, where, limit, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, serverTimestamp, query, orderBy, where, limit, doc, setDoc, getDoc, updateDoc, runTransaction, Timestamp } from 'firebase/firestore';
 
 export type DemoRequest = {
     businessName: string;
@@ -119,6 +119,8 @@ export type Business = {
     plan: BusinessPlan;
     createdAt: Date;
     createdByUid: string;
+    pointsPerScan: number;
+    scanCooldownHours: number;
 };
 
 export type BusinessWithId = Business & { id: string };
@@ -137,6 +139,8 @@ export async function createBusiness(data: {
         plan: data.plan,
         createdByUid: data.createdByUid,
         createdAt: serverTimestamp(),
+        pointsPerScan: 10,
+        scanCooldownHours: 24,
     });
     return docRef.id;
 }
@@ -152,6 +156,8 @@ function mapBusinessDoc(docSnap: any): BusinessWithId {
         plan: data.plan,
         createdByUid: data.createdByUid,
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
+        pointsPerScan: data.pointsPerScan ?? 10,
+        scanCooldownHours: data.scanCooldownHours ?? 24,
     };
 }
 
@@ -203,4 +209,100 @@ export async function claimBusiness(businessId: string, uid: string) {
 
 export async function updateBusinessStatus(businessId: string, status: BusinessStatus) {
     await updateDoc(doc(db, 'businesses', businessId), { status });
+}
+
+export async function updateBusinessPointsConfig(businessId: string, pointsPerScan: number) {
+    await updateDoc(doc(db, 'businesses', businessId), { pointsPerScan });
+}
+
+// ---------------------------------------------------------------------------
+// Scans (a customer scans a business's QR code and earns points). Enforced
+// almost entirely by firestore.rules, not this client code: a customer can
+// only ever increment their own membership doc by exactly the business's
+// configured pointsPerScan, and only once scanCooldownHours has elapsed
+// since their last scan there. This code exists to make that one write
+// (plus its paired scan-log entry) atomic and to translate a rules
+// rejection into a friendly message instead of a raw error.
+// ---------------------------------------------------------------------------
+
+export type Membership = {
+    points: number;
+    lastScanAt: Date;
+    joinedAt: Date;
+};
+
+export async function getMembership(businessId: string, uid: string): Promise<Membership | null> {
+    try {
+        const docSnap = await getDoc(doc(db, 'businesses', businessId, 'members', uid));
+        if (!docSnap.exists()) return null;
+        const data = docSnap.data();
+        return {
+            points: data.points,
+            lastScanAt: data.lastScanAt?.toDate ? data.lastScanAt.toDate() : data.lastScanAt,
+            joinedAt: data.joinedAt?.toDate ? data.joinedAt.toDate() : data.joinedAt,
+        };
+    } catch (error) {
+        console.error("Error getting membership: ", error);
+        return null;
+    }
+}
+
+export type ScanResult =
+    | { status: 'awarded'; pointsAwarded: number; newTotal: number }
+    | { status: 'cooldown'; retryAfter: Date }
+    | { status: 'error'; message: string };
+
+export async function recordScan(businessId: string, uid: string): Promise<ScanResult> {
+    const businessRef = doc(db, 'businesses', businessId);
+    const memberRef = doc(db, 'businesses', businessId, 'members', uid);
+    const scanRef = doc(collection(db, 'businesses', businessId, 'scans'));
+
+    try {
+        return await runTransaction(db, async (transaction) => {
+            const [businessSnap, memberSnap] = await Promise.all([
+                transaction.get(businessRef),
+                transaction.get(memberRef),
+            ]);
+
+            if (!businessSnap.exists()) {
+                return { status: 'error', message: 'This store could not be found.' } as ScanResult;
+            }
+
+            const business = businessSnap.data();
+            const pointsPerScan: number = business.pointsPerScan ?? 10;
+            const cooldownHours: number = business.scanCooldownHours ?? 24;
+            // Client-side "now" is only used to pre-check the cooldown for a
+            // fast, friendly response. The actual write below uses
+            // serverTimestamp() so the committed value matches request.time,
+            // which is what firestore.rules independently verifies.
+            const approxNowMs = Date.now();
+
+            if (memberSnap.exists()) {
+                const member = memberSnap.data();
+                const lastScanAt: Timestamp = member.lastScanAt;
+                const retryAfterMs = lastScanAt.toMillis() + cooldownHours * 60 * 60 * 1000;
+                if (approxNowMs < retryAfterMs) {
+                    return { status: 'cooldown', retryAfter: new Date(retryAfterMs) } as ScanResult;
+                }
+
+                const newTotal = member.points + pointsPerScan;
+                transaction.update(memberRef, { points: newTotal, lastScanAt: serverTimestamp() });
+                transaction.set(scanRef, { customerUid: uid, pointsAwarded: pointsPerScan, scannedAt: serverTimestamp() });
+                return { status: 'awarded', pointsAwarded: pointsPerScan, newTotal } as ScanResult;
+            }
+
+            transaction.set(memberRef, { points: pointsPerScan, lastScanAt: serverTimestamp(), joinedAt: serverTimestamp() });
+            transaction.set(scanRef, { customerUid: uid, pointsAwarded: pointsPerScan, scannedAt: serverTimestamp() });
+            return { status: 'awarded', pointsAwarded: pointsPerScan, newTotal: pointsPerScan } as ScanResult;
+        });
+    } catch (error: any) {
+        // A rules rejection here almost always means the cooldown window
+        // hasn't actually elapsed (a race with the check above) rather than
+        // a real error, so it reads as the same friendly cooldown message.
+        console.error("Error recording scan: ", error);
+        if (error?.code === 'permission-denied') {
+            return { status: 'cooldown', retryAfter: new Date() };
+        }
+        return { status: 'error', message: 'Something went wrong recording your scan. Please try again.' };
+    }
 }

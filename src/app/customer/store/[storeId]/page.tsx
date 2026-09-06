@@ -1,6 +1,7 @@
 
 "use client";
 
+import { use } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,9 +30,10 @@ import { notFound } from "next/navigation";
 export default function StoreDetailPage({
   params,
 }: {
-  params: { storeId: string };
+  params: Promise<{ storeId: string }>;
 }) {
-  const store = getStoreById(params.storeId);
+  const { storeId } = use(params);
+  const store = getStoreById(storeId);
 
   if (!store) {
     notFound();
@@ -72,7 +74,7 @@ export default function StoreDetailPage({
             </div>
           </div>
           <Button asChild className="ml-auto">
-            <Link href={`/customer/scan?storeId=${store.id}`}>
+            <Link href={`/customer/scan?businessId=${store.id}`}>
                 <QrCode className="mr-2 h-4 w-4"/>
                 Scan QR
             </Link>

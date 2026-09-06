@@ -6,33 +6,44 @@ import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getUserRole } from '@/lib/firebase/firestore';
+import { getUserProfile } from '@/lib/firebase/firestore';
+import { isStaffEmail, type Role } from '@/lib/roles';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  role: 'admin' | 'customer' | null;
+  role: Role | null;
+  businessId: string | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   role: null,
+  businessId: null,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<'admin' | 'customer' | null>(null);
+  const [role, setRole] = useState<Role | null>(null);
+  const [businessId, setBusinessId] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        const userRole = await getUserRole(user.uid);
-        setRole(userRole);
+        if (isStaffEmail(user.email)) {
+          setRole('staff');
+          setBusinessId(null);
+        } else {
+          const profile = await getUserProfile(user.uid);
+          setRole(profile?.role ?? null);
+          setBusinessId(profile?.businessId ?? null);
+        }
       } else {
         setRole(null);
+        setBusinessId(null);
       }
       setLoading(false);
     });
@@ -41,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, role }}>
+    <AuthContext.Provider value={{ user, loading, role, businessId }}>
       {children}
     </AuthContext.Provider>
   );
@@ -62,9 +73,17 @@ export const useRequireAuth = (redirectTo = '/login') => {
   return { user, loading };
 };
 
-const ProtectedRoute = ({ children, adminOnly = false }: { children: ReactNode, adminOnly?: boolean }) => {
+function roleHome(role: Role | null): string {
+  if (role === 'staff') return '/staff';
+  if (role === 'admin') return '/admin/dashboard';
+  return '/customer/dashboard';
+}
+
+const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode, allowedRoles?: Role[] }) => {
   const { user, loading, role } = useAuth();
   const router = useRouter();
+
+  const isAllowed = !allowedRoles || (role !== null && allowedRoles.includes(role));
 
   useEffect(() => {
     if (loading) return;
@@ -74,12 +93,12 @@ const ProtectedRoute = ({ children, adminOnly = false }: { children: ReactNode, 
       return;
     }
 
-    if (adminOnly && role !== 'admin') {
-      router.push('/customer/dashboard'); // Or a generic "unauthorized" page
+    if (!isAllowed) {
+      router.push(roleHome(role));
     }
-  }, [user, loading, role, router, adminOnly]);
+  }, [user, loading, role, router, isAllowed]);
 
-  if (loading || !user || (adminOnly && role !== 'admin')) {
+  if (loading || !user || !isAllowed) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -102,5 +121,9 @@ export const CustomerRoute = ({ children }: { children: ReactNode }) => {
 };
 
 export const AdminRoute = ({ children }: { children: ReactNode }) => {
-  return <ProtectedRoute adminOnly={true}>{children}</ProtectedRoute>;
+  return <ProtectedRoute allowedRoles={['admin', 'staff']}>{children}</ProtectedRoute>;
+};
+
+export const StaffRoute = ({ children }: { children: ReactNode }) => {
+  return <ProtectedRoute allowedRoles={['staff']}>{children}</ProtectedRoute>;
 };

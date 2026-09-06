@@ -13,7 +13,6 @@ import {
   Gift,
   PanelLeft,
   LogOut,
-  Mail,
 } from "lucide-react";
 import { getAuth, signOut } from "firebase/auth";
 
@@ -51,7 +50,6 @@ function AdminLayoutContent({
 
   const navItems = [
     { href: "/admin/dashboard", icon: Home, label: "Dashboard" },
-    { href: "/admin/messages", icon: Mail, label: "Messages" },
     { href: "/admin/customers", icon: Users, label: "Customers" },
     { href: "/admin/rewards", icon: Gift, label: "Rewards" },
     { href: "/admin/analytics", icon: LineChart, label: "Analytics" },

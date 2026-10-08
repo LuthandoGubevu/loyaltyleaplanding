@@ -34,11 +34,13 @@ import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase/config';
 import { createUserProfile, findPendingBusinessByEmail, claimBusiness } from '@/lib/firebase/firestore';
 import { isStaffEmail } from '@/lib/roles';
+import { normalizeZaPhone } from '@/lib/phone';
 
 const formSchema = z.object({
     firstName: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
     lastName: z.string().min(2, { message: 'Last name must be at least 2 characters.' }),
     email: z.string().email({ message: 'Invalid email address.' }),
+    phone: z.string().refine(v => normalizeZaPhone(v) !== null, { message: 'Enter a valid South African cellphone number.' }),
     password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
     confirmPassword: z.string(),
     dob: z.date().optional(),
@@ -72,6 +74,7 @@ export default function SignupPage() {
       firstName: '',
       lastName: '',
       email: '',
+      phone: '',
       password: '',
       confirmPassword: '',
       marketingOptIn: false,
@@ -106,6 +109,7 @@ export default function SignupPage() {
         email: user.email!,
         firstName: values.firstName,
         lastName: values.lastName,
+        phone: normalizeZaPhone(values.phone)!,
         dob: values.dob,
         marketingOptIn: values.marketingOptIn,
       };
@@ -189,6 +193,20 @@ export default function SignupPage() {
                   <FormControl>
                     <Input placeholder="name@example.com" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cellphone number</FormLabel>
+                  <FormControl>
+                    <Input type="tel" inputMode="tel" placeholder="082 123 4567" {...field} />
+                  </FormControl>
+                  <FormDescription>Stores use this to find your loyalty stamps at the till.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

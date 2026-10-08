@@ -21,7 +21,7 @@ const tiers: PricingTier[] = [
     price: 'R299',
     priceFrequency: '/month',
     description: 'For a single shop getting started with loyalty',
-    features: ['1 store', 'Unlimited customers', 'QR code loyalty', 'Customizable rewards', 'Email support'],
+    features: ['1 store', 'Unlimited customers', 'Till screen: QR code & cellphone number stamps', 'Customizable stamp rewards', 'Email support'],
     ctaText: 'Get Started',
   },
   {

@@ -1,6 +1,7 @@
 
 import { db } from './config';
 import { collection, addDoc, getDocs, serverTimestamp, query, orderBy, where, limit, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { DEFAULT_PROGRAM, type LoyaltyProgram, type Reward } from '@/lib/loyalty/types';
 
 export type DemoRequest = {
     businessName: string;
@@ -22,6 +23,7 @@ export type UserProfile = {
     businessId?: string;
     firstName?: string;
     lastName?: string;
+    phone?: string;
     dob?: Date;
     marketingOptIn?: boolean;
 };
@@ -51,6 +53,7 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
                 businessId: data.businessId,
                 firstName: data.firstName,
                 lastName: data.lastName,
+                phone: data.phone,
                 dob: data.dob,
                 marketingOptIn: data.marketingOptIn,
             };
@@ -203,4 +206,41 @@ export async function claimBusiness(businessId: string, uid: string) {
 
 export async function updateBusinessStatus(businessId: string, status: BusinessStatus) {
     await updateDoc(doc(db, 'businesses', businessId), { status });
+}
+
+// ---------------------------------------------------------------------------
+// Loyalty programme settings and rewards (managed by the business admin).
+// Stamps themselves are only written by the server API routes.
+// ---------------------------------------------------------------------------
+
+export async function getLoyaltyProgram(businessId: string): Promise<LoyaltyProgram> {
+    const snap = await getDoc(doc(db, 'businesses', businessId));
+    const program = snap.data()?.program ?? {};
+    return {
+        earnRule: program.earnRule || DEFAULT_PROGRAM.earnRule,
+        minSpend: typeof program.minSpend === 'number' ? program.minSpend : null,
+        cooldownHours: typeof program.cooldownHours === 'number' ? program.cooldownHours : DEFAULT_PROGRAM.cooldownHours,
+    };
+}
+
+export async function updateLoyaltyProgram(businessId: string, program: LoyaltyProgram) {
+    await updateDoc(doc(db, 'businesses', businessId), { program });
+}
+
+export async function getRewards(businessId: string): Promise<Reward[]> {
+    const snap = await getDocs(collection(db, 'businesses', businessId, 'rewards'));
+    return snap.docs
+        .map(d => ({ id: d.id, name: d.data().name, stampsRequired: d.data().stampsRequired, active: d.data().active }))
+        .sort((a, b) => a.stampsRequired - b.stampsRequired);
+}
+
+export async function addReward(businessId: string, reward: Omit<Reward, 'id'>) {
+    await addDoc(collection(db, 'businesses', businessId, 'rewards'), {
+        ...reward,
+        createdAt: serverTimestamp(),
+    });
+}
+
+export async function updateReward(businessId: string, rewardId: string, reward: Partial<Omit<Reward, 'id'>>) {
+    await updateDoc(doc(db, 'businesses', businessId, 'rewards', rewardId), reward);
 }

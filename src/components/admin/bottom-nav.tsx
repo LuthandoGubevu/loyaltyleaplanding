@@ -3,11 +3,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Users, Gift, LineChart, Settings } from "lucide-react";
+import { Home, Users, Gift, LineChart, Settings, ScanLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/admin/dashboard", icon: Home, label: "Dashboard" },
+  { href: "/admin/till", icon: ScanLine, label: "Till" },
   { href: "/admin/customers", icon: Users, label: "Customers" },
   { href: "/admin/rewards", icon: Gift, label: "Rewards" },
   { href: "/admin/analytics", icon: LineChart, label: "Analytics" },
@@ -19,7 +20,7 @@ export function AdminBottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 h-16 bg-background border-t border-border/40 shadow-[0_-1px_4px_rgba(0,0,0,0.05)] z-50 sm:hidden">
-      <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
+      <div className="grid h-full max-w-lg grid-cols-6 mx-auto">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
             

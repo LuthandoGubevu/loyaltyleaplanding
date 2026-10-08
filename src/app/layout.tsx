@@ -12,7 +12,7 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: 'Loyalty Leap - Turn Shoppers into Loyal Customers',
-  description: 'Loyalty Leap helps small businesses drive repeat visits with a white-labeled loyalty platform.',
+  description: 'Loyalty Leap helps local businesses drive repeat visits with digital stamp cards that work for every customer: scan a QR code at the till or give a cellphone number.',
   manifest: '/manifest.json',
   icons: {
     icon: '/icons/192x192.png',

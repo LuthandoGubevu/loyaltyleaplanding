@@ -14,25 +14,25 @@ const steps: Step[] = [
   {
     icon: ShoppingCart,
     title: 'Make a Purchase',
-    description: 'Customers enjoy your products or services as usual.',
+    description: 'Customers shop as usual and pay however they like: cash, card or EFT.',
     iconColorClass: 'text-[hsl(var(--primary))]', // Coral Red
   },
   {
     icon: QrCode,
-    title: 'Scan QR Code',
-    description: 'A quick scan at checkout using their phone – no app needed!',
+    title: 'Collect a Stamp',
+    description: 'They scan the one-time QR code on the till screen, or simply give staff their cellphone number.',
     iconColorClass: 'text-[hsl(var(--accent))]', // Slate Purple
   },
   {
     icon: Award,
-    title: 'Earn Loyalty Points',
-    description: 'Points are instantly added to their personalized loyalty account.',
+    title: 'Watch Stamps Add Up',
+    description: 'Each shop sets its own rewards, like a free coffee after 10 stamps.',
     iconColorClass: 'text-[hsl(var(--soft-reddish-orange-hsl))]', // Soft Reddish Orange
   },
   {
     icon: Gift,
-    title: 'Track & Redeem Rewards',
-    description: 'Customers track progress and redeem rewards through your branded site.',
+    title: 'Redeem at the Till',
+    description: 'Staff see when a reward is ready and redeem it in one tap.',
     iconColorClass: 'text-[hsl(var(--deep-blue-hsl))]', // Deep Blue
   },
 ];
@@ -46,7 +46,7 @@ export function HowItWorksSection() {
             Simple Steps to Lasting Loyalty
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Our intuitive platform makes it easy for customers to join and engage with your loyalty program.
+            A digital stamp card that works for every customer, whether they have a smartphone or not.
           </p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">

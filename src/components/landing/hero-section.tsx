@@ -18,7 +18,7 @@ export function HeroSection() {
               Get Rewarded for Shopping Local
             </h1>
             <p className="mt-6 text-lg md:text-xl !text-white/90 drop-shadow-sm max-w-xl mx-auto md:mx-0">
-              With Loyalty Leap, earning points at your favorite cafes, boutiques, and shops is simple. No app needed—just scan and save every time you support a local business.
+              Collect stamps at your favourite cafés, salons and shops every time you visit. Scan the QR code at the till, or just give your cellphone number. No download, and no smartphone needed.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                <AuthButtons />
@@ -30,7 +30,7 @@ export function HeroSection() {
           <div className="flex justify-center items-center">
             <Image
               src="/HeroImage.jpg"
-              alt="A smiling shopper scanning a QR code with their phone at a checkout counter."
+              alt="A smiling shopper collecting a loyalty stamp at a checkout counter."
               width={500}
               height={450}
               className="rounded-xl shadow-2xl object-cover"

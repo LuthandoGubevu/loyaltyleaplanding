@@ -11,23 +11,31 @@ import Link from 'next/link';
 const faqs = [
   {
     question: "Is Loyalty Leap suitable for my type of business?",
-    answer: "Absolutely! Loyalty Leap is designed to be flexible and customizable for various small businesses, including salons, retail stores, cafes, restaurants, and more. You can tailor rewards and tiers to match your specific industry and customer base.",
+    answer: "Yes. Loyalty Leap works for any business with repeat customers, including cafés, salons, restaurants, florists and retail stores. You decide what earns a stamp and which rewards customers can unlock.",
   },
   {
-    question: "Do my customers need to download an app?",
-    answer: "No, one of the key benefits of Loyalty Leap is that it's app-free. Customers can easily access their loyalty status, points, and rewards through a simple web link on any smartphone or computer.",
+    question: "Do my customers need to download an app or own a smartphone?",
+    answer: "No. Customers with a smartphone use Loyalty Leap in their web browser to scan the QR code at your till; there's nothing to download. Customers without a smartphone or data simply give their cellphone number, and your staff add the stamp for them.",
   },
   {
-    question: "How long does it take to set up Loyalty Leap?",
-    answer: "Getting started with Loyalty Leap is quick and easy. Basic setup can be done in under an hour. Our team is also here to assist you if you need any help with customization or integration.",
+    question: "What do I need at the till?",
+    answer: "Any smartphone, tablet or computer with an internet connection and a web browser. You log in, open the Till screen, and you're ready to add stamps.",
   },
   {
-    question: "Can I integrate Loyalty Leap with my existing POS system?",
-    answer: "We offer various integration options, including API access for custom solutions on our higher-tier plans. For simpler setups, the QR code system works independently and seamlessly alongside any POS.",
+    question: "How do you stop customers from cheating?",
+    answer: "The QR code on your till screen only appears when staff tap \"Show QR\", works once, and expires after 60 seconds, so a photo of it is useless. You can also set how many hours must pass before the same customer earns another stamp.",
+  },
+  {
+    question: "Does it work with my POS or cash register?",
+    answer: "Loyalty Leap runs alongside any POS or cash register, and customers can pay with cash, card or EFT. Staff add stamps from the Till screen, so no POS integration is needed.",
+  },
+  {
+    question: "What about my customers' personal information?",
+    answer: "Staff only add a customer after the customer agrees to join, and that consent is recorded, in line with POPIA. Each business can only see its own customers.",
   },
   {
     question: "What kind of support do you offer?",
-    answer: "All our plans include email support. Our Growth and Custom plans come with priority support and dedicated account management to ensure you get the most out of Loyalty Leap.",
+    answer: "All plans include email support. Growth includes priority email support, and Pro includes dedicated onboarding and phone support.",
   },
 ];
 

@@ -1,14 +1,25 @@
-import { initializeApp, getApps, getApp } from 'firebase-admin/app';
+import { initializeApp, getApps, getApp, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { isStaffEmail, type Role } from '@/lib/roles';
 
-// Uses Application Default Credentials: automatic on Firebase App Hosting;
-// locally, point FIRESTORE_EMULATOR_HOST / FIREBASE_AUTH_EMULATOR_HOST at the
-// emulators or set GOOGLE_APPLICATION_CREDENTIALS.
-const adminApp = getApps().length
-  ? getApp()
-  : initializeApp({ projectId: process.env.GCLOUD_PROJECT ?? 'loyaltyleap-e166f' });
+// Credentials, in order of preference:
+// - FIREBASE_SERVICE_ACCOUNT_KEY: the service account JSON (needed on hosts
+//   outside Google Cloud, e.g. Netlify);
+// - otherwise Application Default Credentials: automatic on Firebase App
+//   Hosting; locally, point FIRESTORE_EMULATOR_HOST /
+//   FIREBASE_AUTH_EMULATOR_HOST at the emulators or set
+//   GOOGLE_APPLICATION_CREDENTIALS.
+function createAdminApp() {
+  const projectId = process.env.GCLOUD_PROJECT ?? 'loyaltyleap-e166f';
+  const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (serviceAccountKey) {
+    return initializeApp({ credential: cert(JSON.parse(serviceAccountKey)), projectId });
+  }
+  return initializeApp({ projectId });
+}
+
+const adminApp = getApps().length ? getApp() : createAdminApp();
 
 export const adminAuth = getAuth(adminApp);
 export const adminDb = getFirestore(adminApp);

@@ -71,6 +71,12 @@ export async function requireUser(req: Request, allowedRoles: Role[]): Promise<R
 export async function requireAdminBusiness(req: Request): Promise<RequestUser & { businessId: string }> {
   const user = await requireUser(req, ['admin']);
   if (!user.businessId) throw new ApiError(403, 'Your account is not linked to a business yet.');
+  // The business's own adminUid is the source of truth; a profile claiming a
+  // businessId is not enough on its own.
+  const business = await adminDb.collection('businesses').doc(user.businessId).get();
+  if (business.data()?.adminUid !== user.uid) {
+    throw new ApiError(403, 'Your account is not the admin of this business.');
+  }
   return user as RequestUser & { businessId: string };
 }
 

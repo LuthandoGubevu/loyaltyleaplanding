@@ -13,31 +13,43 @@ service cloud.firestore {
         request.auth.token.email.lower() in ['timlasive@gmail.com', 'lgubevu@gmail.com'];
     }
 
-    // Helper function to check if a user is a business admin
-    function isAdmin() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    // The business's own adminUid is the source of truth for who runs it.
+    // A user's profile role/businessId alone is never trusted for access.
+    function isBusinessAdmin(businessId) {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/businesses/$(businessId)).data.adminUid == request.auth.uid;
     }
 
-    function myBusinessId() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.businessId;
+    // At signup, an account may only link itself to a business that staff
+    // assigned to its email and that nobody has claimed yet.
+    function canClaimBusiness(businessId) {
+      let business = get(/databases/$(database)/documents/businesses/$(businessId)).data;
+      return request.auth.token.email.lower() == business.assignedAdminEmail
+        && (business.adminUid == null || business.adminUid == request.auth.uid);
     }
 
     // Rules for the 'users' collection
     match /users/{userId} {
       // A user can create their own profile document, but the role they
       // claim is constrained: 'staff' only for the allowed staff emails,
-      // 'admin' only alongside a businessId, 'customer' always allowed.
+      // 'admin' only for a business staff assigned to this account's email
+      // and not yet claimed by anyone else, 'customer' always allowed (and
+      // never with a businessId).
       allow create: if request.auth.uid == userId && (
         (request.resource.data.role == 'staff' && isStaff()) ||
-        (request.resource.data.role == 'admin' && request.resource.data.businessId is string) ||
-        (request.resource.data.role == 'customer')
+        (request.resource.data.role == 'admin'
+          && request.resource.data.businessId is string
+          && canClaimBusiness(request.resource.data.businessId)) ||
+        (request.resource.data.role == 'customer' && !('businessId' in request.resource.data))
       );
 
-      // A user can read their own profile. Staff or a business admin can read any user's profile.
-      allow read: if request.auth.uid == userId || isStaff() || isAdmin();
+      // A user can read their own profile. Staff can read any user's profile.
+      allow read: if request.auth.uid == userId || isStaff();
 
-      // A user can update their own profile data, but cannot change their role.
-      allow update: if request.auth.uid == userId && request.resource.data.role == resource.data.role;
+      // A user can update their own profile data, but cannot change their
+      // role or which business they belong to.
+      allow update: if request.auth.uid == userId
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'businessId']);
 
       // Staff can update any user's profile, including changing their role.
       allow update: if isStaff();
@@ -64,7 +76,7 @@ service cloud.firestore {
       // pending assignment matches their own verified email, so the signup
       // flow can find (only) their own pending assignment.
       allow read: if isStaff()
-        || (request.auth != null && myBusinessId() == businessId)
+        || (request.auth != null && resource.data.adminUid == request.auth.uid)
         || (request.auth != null && request.auth.token.email.lower() == resource.data.assignedAdminEmail);
 
       // Only staff can onboard or remove a business.
@@ -86,7 +98,7 @@ service cloud.firestore {
         // The owning admin may update their own business's basic profile
         // fields, but not their plan, assignment, or claim state.
         || (
-          isAdmin() && resource.data.adminUid == request.auth.uid
+          request.auth != null && resource.data.adminUid == request.auth.uid
           && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['adminUid', 'assignedAdminEmail', 'plan', 'status'])
         );
 
@@ -94,7 +106,7 @@ service cloud.firestore {
       // only by the server (Admin SDK, which bypasses these rules), so the
       // browser can never add stamps itself.
       function ownsBusiness() {
-        return request.auth != null && isAdmin() && myBusinessId() == businessId;
+        return isBusinessAdmin(businessId);
       }
 
       // Rewards are defined by the business admin; any signed-in user may
@@ -132,15 +144,16 @@ service cloud.firestore {
     match /stores/{storeId} {
       // Anyone authenticated can view stores
       allow read: if request.auth != null;
-      // Only admins can create, update, or delete stores
-      allow write: if isAdmin();
+      // Legacy collection: only platform staff may write
+      allow write: if isStaff();
     }
     
     match /rewards/{rewardId} {
        // Anyone authenticated can view rewards
       allow read: if request.auth != null;
-      // Only admins can create, update, or delete rewards
-      allow write: if isAdmin();
+      // Legacy collection (rewards now live under each business): only
+      // platform staff may write
+      allow write: if isStaff();
     }
   }
 }

@@ -17,12 +17,29 @@ interface PricingTier {
 
 const tiers: PricingTier[] = [
   {
-    name: 'Custom',
-    price: 'Let\'s Talk',
-    priceFrequency: '',
-    description: "We tailor solutions for each business",
-    features: ['Basic QR code loyalty', 'Unlimited Customers', 'Email support', 'Customizable rewards', 'Customer analytics'],
-    ctaText: 'Book A Demo Call',
+    name: 'Starter',
+    price: 'R299',
+    priceFrequency: '/month',
+    description: 'For a single shop getting started with loyalty',
+    features: ['1 store', 'Unlimited customers', 'QR code loyalty', 'Customizable rewards', 'Email support'],
+    ctaText: 'Get Started',
+  },
+  {
+    name: 'Growth',
+    price: 'R599',
+    priceFrequency: '/month',
+    description: 'For growing businesses with more than one location',
+    features: ['Up to 3 stores', 'Everything in Starter', 'Customer analytics', 'Staff accounts', 'Priority email support'],
+    isRecommended: true,
+    ctaText: 'Get Started',
+  },
+  {
+    name: 'Pro',
+    price: 'R1,199',
+    priceFrequency: '/month',
+    description: 'For multi-location brands that want to stand out',
+    features: ['Unlimited stores', 'Everything in Growth', 'Custom branding', 'Promotion to the Loyalty Leap shopper network', 'Dedicated onboarding & phone support'],
+    ctaText: 'Get Started',
   },
 ];
 
@@ -79,6 +96,13 @@ export function PricingSection() {
             </Card>
           ))}
         </div>
+        <p className="mt-10 text-center text-sm text-muted-foreground">
+          All prices exclude VAT. Need something bigger?{' '}
+          <Link href="/book-a-demo" className="font-semibold text-primary hover:underline">
+            Book a demo
+          </Link>{' '}
+          for custom pricing.
+        </p>
       </MaxWidthWrapper>
     </section>
   );

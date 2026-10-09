@@ -1,11 +1,11 @@
 {
   "name": "Loyalty Leap",
   "short_name": "LoyaltyLeap",
-  "description": "Track rewards and loyalty points at your favorite local shops.",
+  "description": "Collect stamps and rewards at your favourite local shops.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#e74c3c",
+  "background_color": "#FFF4EF",
+  "theme_color": "#E26C5E",
   "icons": [
     {
       "src": "/icons/72x72.png",
@@ -46,6 +46,12 @@
       "src": "/icons/512x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "/icons/maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

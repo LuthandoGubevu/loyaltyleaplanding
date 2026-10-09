@@ -14,10 +14,8 @@ export const metadata: Metadata = {
   title: 'Loyalty Leap - Turn Shoppers into Loyal Customers',
   description: 'Loyalty Leap helps local businesses drive repeat visits with digital stamp cards that work for every customer: scan a QR code at the till or give a cellphone number.',
   manifest: '/manifest.json',
-  icons: {
-    icon: '/icons/192x192.png',
-    apple: '/icons/192x192.png',
-  },
+  // Tab and home-screen icons come from src/app/favicon.ico, icon.png and
+  // apple-icon.png (the Loyalty Leap gift logo).
 };
 
 export const viewport: Viewport = {

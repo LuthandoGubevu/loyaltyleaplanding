@@ -113,6 +113,17 @@ export async function createTillCode(bid: string, byUid: string) {
   return { code, expiresAt: expiresAt.toMillis() };
 }
 
+export async function assertCanAddMember(bid: string) {
+  const { plan } = await getBusiness(bid);
+  if (plan.maxMembers !== null && (await countMembers(bid)) >= plan.maxMembers) {
+    throw new ApiError(
+      402,
+      `This store has reached its member limit (${formatLimit(plan.maxMembers)} on the ${plan.id} plan). ` +
+        'Existing members can still earn stamps. Ask the owner to upgrade to add new members.',
+    );
+  }
+}
+
 type NewMember = {
   name: string;
   uid: string | null;
@@ -144,16 +155,7 @@ export async function addStamp(input: StampInput) {
   const codeRef = tillCode ? bRef.collection('tillCodes').doc(tillCode) : null;
 
   // Member limit: only new members count against it, existing ones always earn.
-  if (newMember && !(await mRef.get()).exists) {
-    const { plan } = await getBusiness(bid);
-    if (plan.maxMembers !== null && (await countMembers(bid)) >= plan.maxMembers) {
-      throw new ApiError(
-        402,
-        `This store has reached its member limit (${formatLimit(plan.maxMembers)} on the ${plan.id} plan). ` +
-          'Existing members can still earn stamps. Ask the owner to upgrade to add new members.',
-      );
-    }
-  }
+  if (newMember && !(await mRef.get()).exists) await assertCanAddMember(bid);
 
   return adminDb.runTransaction(async (tx: Transaction) => {
     const [bSnap, mSnap, codeSnap] = await Promise.all([
@@ -367,4 +369,82 @@ export async function updateProgram(bid: string, program: LoyaltyProgram) {
     throw new ApiError(402, 'Birthday rewards are included in the Growth and Pro plans.');
   }
   await businessRef(bid).update({ program });
+}
+
+export type CustomerDetails = {
+  firstName: string;
+  lastName: string;
+  phone: string; // normalised
+  email: string | null;
+  birthday: string | null; // "MM-DD"
+  birthYear: number | null;
+  marketingOptIn: boolean;
+};
+
+// A manager registers a customer before (or without) them using the app.
+// The customer's later app sign-up with the same cellphone number links to
+// this record (see linkMemberships).
+export async function createMember(bid: string, details: CustomerDetails, byUid: string) {
+  const ref = memberRef(bid, details.phone);
+  if ((await ref.get()).exists) {
+    throw new ApiError(409, 'A customer with this cellphone number is already in your programme.');
+  }
+  await assertCanAddMember(bid);
+  const now = Timestamp.now();
+  try {
+    await ref.create({
+      name: `${details.firstName} ${details.lastName}`.trim(),
+      firstName: details.firstName,
+      lastName: details.lastName,
+      phone: details.phone,
+      email: details.email,
+      uid: null,
+      stamps: 0,
+      lifetimeStamps: 0,
+      lastStampAt: null,
+      createdAt: now,
+      consentAt: now,
+      marketingOptIn: details.marketingOptIn,
+      addedBy: 'admin',
+      addedByUid: byUid,
+      birthday: details.birthday,
+      birthYear: details.birthYear,
+    });
+  } catch (error: any) {
+    // Another till/admin created the same number at the same moment.
+    if (error?.code === 6 || /already exists/i.test(error?.message ?? '')) {
+      throw new ApiError(409, 'A customer with this cellphone number is already in your programme.');
+    }
+    throw error;
+  }
+}
+
+// Connects a customer's app account to every shop that registered their
+// cellphone number before they signed up. Returns the shops now linked.
+export async function linkMemberships(uid: string, phone: string, birthday: { birthday: string; birthYear: number } | null) {
+  const businesses = await adminDb.collection('businesses').where('status', '==', 'active').get();
+  if (businesses.empty) return { linked: [], newlyLinked: [] };
+  const refs = businesses.docs.map((b) => b.ref.collection('members').doc(phone));
+  const linked: string[] = [];
+  const newlyLinked: string[] = [];
+  await adminDb.runTransaction(async (tx) => {
+    linked.length = 0;
+    newlyLinked.length = 0;
+    const snaps = await tx.getAll(...refs);
+    snaps.forEach((snap, i) => {
+      if (!snap.exists) return;
+      const member = snap.data()!;
+      if (member.uid && member.uid !== uid) return;
+      if (!member.uid) {
+        tx.update(snap.ref, {
+          uid,
+          linkedAt: Timestamp.now(),
+          ...(!member.birthday && birthday ? birthday : {}),
+        });
+        newlyLinked.push(businesses.docs[i].data().name as string);
+      }
+      linked.push(businesses.docs[i].data().name as string);
+    });
+  });
+  return { linked, newlyLinked };
 }

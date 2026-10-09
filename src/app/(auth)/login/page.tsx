@@ -71,7 +71,9 @@ export default function LoginPage() {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.message || 'An unexpected error occurred. Please try again.',
+        description: ['auth/user-not-found', 'auth/wrong-password', 'auth/invalid-credential', 'auth/invalid-email'].includes(error?.code)
+          ? "Email or password is incorrect. If Loyalty Leap set up your business for you, sign up first using that email address."
+          : error.message || 'An unexpected error occurred. Please try again.',
       });
     } finally {
         setIsLoading(false);

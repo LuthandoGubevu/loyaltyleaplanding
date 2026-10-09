@@ -38,7 +38,7 @@ function birthdayRewardOn(program: LoyaltyProgram, plan: Plan): boolean {
   return plan.birthdayRewards && program.birthdayReward.enabled;
 }
 
-function memberSummary(
+export function memberSummary(
   id: string,
   data: FirebaseFirestore.DocumentData,
   program: LoyaltyProgram,

@@ -12,7 +12,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getStoreById } from "@/lib/mock-data";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
 import type { RewardProgress } from "@/lib/loyalty/types";
 
@@ -20,6 +19,7 @@ const qrcodeRegionId = "html5qr-code-full-region";
 
 export function ScanContent() {
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const handledRef = useRef(false);
   const { toast } = useToast();
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [hasPermission, setHasPermission] = useState(true);
@@ -31,7 +31,6 @@ export function ScanContent() {
 
   const searchParams = useSearchParams();
   const storeId = searchParams.get('storeId');
-  const store = storeId ? getStoreById(storeId) : null;
   const backHref = storeId ? `/customer/store/${storeId}` : '/customer/dashboard';
 
 
@@ -69,6 +68,10 @@ export function ScanContent() {
       setScanResult(null);
 
       const qrCodeSuccessCallback = (decodedText: string) => {
+        // The camera keeps decoding the same code until the scanner stops;
+        // only the first read may claim it.
+        if (handledRef.current) return;
+        handledRef.current = true;
         setIsScanning(false);
         if (html5Qrcode.isScanning) {
             html5Qrcode.stop().catch(err => console.error("Error stopping scanner post-success", err));
@@ -143,14 +146,14 @@ export function ScanContent() {
         <Button asChild variant="ghost" className="mb-4">
             <Link href={backHref}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to {store ? store.name : 'Dashboard'}
+                {storeId ? 'Back to shop' : 'Back to your shops'}
             </Link>
         </Button>
         <Card>
             <CardHeader>
                 <CardTitle>Scan QR Code</CardTitle>
                 <CardDescription>
-                   Scan the QR code shown at the till to collect a stamp{store ? ` at ${store.name}` : ''}.
+                   Scan the QR code shown at the till to collect a stamp.
                 </CardDescription>
             </CardHeader>
             <CardContent className="relative flex flex-col items-center justify-center">
@@ -203,10 +206,15 @@ export function ScanContent() {
                                 {scanResult}
                             </AlertDescription>
                         </Alert>
-                         <Button onClick={handleRescan} className="mt-4">
+                        <div className="mt-4 flex flex-wrap justify-center gap-2">
+                          <Button asChild>
+                            <Link href="/customer/dashboard">View your stamps</Link>
+                          </Button>
+                          <Button variant="outline" onClick={handleRescan}>
                             <RefreshCw className="mr-2 h-4 w-4" />
                             Scan Another
-                        </Button>
+                          </Button>
+                        </div>
                     </div>
                 )}
             </CardContent>

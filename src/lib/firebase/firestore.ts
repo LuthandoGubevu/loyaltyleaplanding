@@ -1,7 +1,7 @@
 
 import { db } from './config';
 import { collection, addDoc, getDocs, serverTimestamp, query, orderBy, where, limit, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { DEFAULT_PROGRAM, type LoyaltyProgram, type Reward } from '@/lib/loyalty/types';
+import { normalizePlan, type PlanId } from '@/lib/plans';
 
 export type DemoRequest = {
     businessName: string;
@@ -111,7 +111,7 @@ export async function getDemoRequests(): Promise<DemoRequestWithId[]> {
 // or later by staff).
 // ---------------------------------------------------------------------------
 
-export type BusinessPlan = 'Launch' | 'Growth' | 'Complete';
+export type BusinessPlan = PlanId;
 export type BusinessStatus = 'pending' | 'active' | 'inactive';
 
 export type Business = {
@@ -137,7 +137,7 @@ export async function createBusiness(data: {
         assignedAdminEmail: data.assignedAdminEmail.toLowerCase().trim(),
         adminUid: null,
         status: 'pending',
-        plan: data.plan,
+        plan: normalizePlan(data.plan),
         createdByUid: data.createdByUid,
         createdAt: serverTimestamp(),
     });
@@ -152,7 +152,7 @@ function mapBusinessDoc(docSnap: any): BusinessWithId {
         assignedAdminEmail: data.assignedAdminEmail,
         adminUid: data.adminUid ?? null,
         status: data.status,
-        plan: data.plan,
+        plan: normalizePlan(data.plan),
         createdByUid: data.createdByUid,
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
     };
@@ -206,41 +206,4 @@ export async function claimBusiness(businessId: string, uid: string) {
 
 export async function updateBusinessStatus(businessId: string, status: BusinessStatus) {
     await updateDoc(doc(db, 'businesses', businessId), { status });
-}
-
-// ---------------------------------------------------------------------------
-// Loyalty programme settings and rewards (managed by the business admin).
-// Stamps themselves are only written by the server API routes.
-// ---------------------------------------------------------------------------
-
-export async function getLoyaltyProgram(businessId: string): Promise<LoyaltyProgram> {
-    const snap = await getDoc(doc(db, 'businesses', businessId));
-    const program = snap.data()?.program ?? {};
-    return {
-        earnRule: program.earnRule || DEFAULT_PROGRAM.earnRule,
-        minSpend: typeof program.minSpend === 'number' ? program.minSpend : null,
-        cooldownHours: typeof program.cooldownHours === 'number' ? program.cooldownHours : DEFAULT_PROGRAM.cooldownHours,
-    };
-}
-
-export async function updateLoyaltyProgram(businessId: string, program: LoyaltyProgram) {
-    await updateDoc(doc(db, 'businesses', businessId), { program });
-}
-
-export async function getRewards(businessId: string): Promise<Reward[]> {
-    const snap = await getDocs(collection(db, 'businesses', businessId, 'rewards'));
-    return snap.docs
-        .map(d => ({ id: d.id, name: d.data().name, stampsRequired: d.data().stampsRequired, active: d.data().active }))
-        .sort((a, b) => a.stampsRequired - b.stampsRequired);
-}
-
-export async function addReward(businessId: string, reward: Omit<Reward, 'id'>) {
-    await addDoc(collection(db, 'businesses', businessId, 'rewards'), {
-        ...reward,
-        createdAt: serverTimestamp(),
-    });
-}
-
-export async function updateReward(businessId: string, rewardId: string, reward: Partial<Omit<Reward, 'id'>>) {
-    await updateDoc(doc(db, 'businesses', businessId, 'rewards', rewardId), reward);
 }

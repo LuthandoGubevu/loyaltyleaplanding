@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { QRCodeSVG } from "qrcode.react";
-import { CheckCircle2, Gift, Loader2, Phone, QrCode, RefreshCw, Stamp, UserPlus } from "lucide-react";
+import { Cake, CheckCircle2, Gift, Loader2, Phone, QrCode, RefreshCw, Stamp, UserPlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +16,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase/config";
-import { getLoyaltyProgram } from "@/lib/firebase/firestore";
+import { fetchProgram } from "@/lib/loyalty/client";
 import { apiFetch } from "@/lib/api-client";
 import { formatZaPhone } from "@/lib/phone";
 import { buildTillPayload, type LoyaltyProgram, type MemberSummary, type RewardProgress } from "@/lib/loyalty/types";
@@ -104,12 +104,16 @@ function QrTill({ businessId }: { businessId: string }) {
 
 type Lookup = { phone: string; member: MemberSummary | null; rewards: RewardProgress[] };
 
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
 function PhoneTill() {
   const { toast } = useToast();
   const [phoneInput, setPhoneInput] = useState("");
   const [lookup, setLookup] = useState<Lookup | null>(null);
   const [name, setName] = useState("");
   const [consent, setConsent] = useState(false);
+  const [birthDay, setBirthDay] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
 
   const reset = () => {
@@ -117,7 +121,11 @@ function PhoneTill() {
     setLookup(null);
     setName("");
     setConsent(false);
+    setBirthDay("");
+    setBirthMonth("");
   };
+
+  const birthday = birthDay && birthMonth ? `${birthMonth}-${birthDay.padStart(2, "0")}` : undefined;
 
   const find = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,7 +146,7 @@ function PhoneTill() {
       const isNew = !lookup.member;
       const result = await apiFetch<{ member: MemberSummary; rewards: RewardProgress[] }>("/api/till/stamp", {
         method: "POST",
-        body: isNew ? { phone: lookup.phone, name, consent } : { phone: lookup.phone },
+        body: isNew ? { phone: lookup.phone, name, consent, birthday } : { phone: lookup.phone },
       });
       setLookup({ phone: lookup.phone, member: result.member, rewards: result.rewards });
       toast({ title: `Stamp added for ${result.member.name}`, description: `They now have ${result.member.stamps} stamp(s).` });
@@ -149,16 +157,20 @@ function PhoneTill() {
     }
   };
 
-  const redeem = async (reward: RewardProgress) => {
+  const redeem = async (reward: RewardProgress | "birthday") => {
     if (!lookup) return;
-    setBusy(reward.id);
+    const isBirthday = reward === "birthday";
+    setBusy(isBirthday ? "birthday" : reward.id);
     try {
       const result = await apiFetch<{ member: MemberSummary; rewards: RewardProgress[]; rewardName: string }>("/api/till/redeem", {
         method: "POST",
-        body: { phone: lookup.phone, rewardId: reward.id },
+        body: isBirthday ? { phone: lookup.phone, birthday: true } : { phone: lookup.phone, rewardId: reward.id },
       });
       setLookup({ phone: lookup.phone, member: result.member, rewards: result.rewards });
-      toast({ title: `${result.rewardName} redeemed`, description: `${result.member.name} has ${result.member.stamps} stamp(s) left.` });
+      toast({
+        title: `${result.rewardName} redeemed`,
+        description: isBirthday ? `Happy birthday, ${result.member.name}!` : `${result.member.name} has ${result.member.stamps} stamp(s) left.`,
+      });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Could not redeem", description: error.message });
     } finally {
@@ -209,6 +221,33 @@ function PhoneTill() {
         <div className="flex flex-col gap-3 rounded-lg border p-4">
           <Label htmlFor="till-name">Customer name</Label>
           <Input id="till-name" className="h-12 text-lg" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Thandi Mokoena" />
+          <div className="flex flex-col gap-2">
+            <Label>Birthday <span className="font-normal text-muted-foreground">(optional)</span></Label>
+            <div className="flex gap-2">
+              <Input
+                aria-label="Birthday day"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={31}
+                placeholder="Day"
+                className="h-12 w-24 text-lg"
+                value={birthDay}
+                onChange={(e) => setBirthDay(e.target.value.slice(0, 2))}
+              />
+              <select
+                aria-label="Birthday month"
+                className="h-12 flex-1 rounded-md border border-input bg-background px-3 text-lg"
+                value={birthMonth}
+                onChange={(e) => setBirthMonth(e.target.value)}
+              >
+                <option value="">Month</option>
+                {MONTHS.map((m, i) => (
+                  <option key={m} value={String(i + 1).padStart(2, "0")}>{m}</option>
+                ))}
+              </select>
+            </div>
+          </div>
           <div className="flex items-start gap-3">
             <Checkbox id="till-consent" checked={consent} onCheckedChange={(v) => setConsent(v === true)} className="mt-1" />
             <Label htmlFor="till-consent" className="font-normal leading-snug">
@@ -227,6 +266,16 @@ function PhoneTill() {
         {busy === "stamp" ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : member ? <Stamp className="mr-2 h-5 w-5" /> : <UserPlus className="mr-2 h-5 w-5" />}
         {member ? "Add stamp" : "Add customer & stamp"}
       </Button>
+
+      {member?.birthdayRewardAvailable && (
+        <div className="rounded-lg border-2 border-primary bg-primary/10 p-3">
+          <p className="flex items-center gap-2 font-semibold"><Cake className="h-5 w-5 text-primary" />It&apos;s {member.name}&apos;s birthday week!</p>
+          <Button className="mt-3 w-full" onClick={() => redeem("birthday")} disabled={busy !== null}>
+            {busy === "birthday" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Gift className="mr-2 h-4 w-4" />}
+            Redeem {member.birthdayRewardAvailable.name}
+          </Button>
+        </div>
+      )}
 
       {member && rewards.length > 0 && (
         <div className="flex flex-col gap-3">
@@ -261,7 +310,7 @@ export default function TillPage() {
   const [program, setProgram] = useState<LoyaltyProgram | null>(null);
 
   useEffect(() => {
-    if (businessId) getLoyaltyProgram(businessId).then(setProgram).catch(() => setProgram(null));
+    if (businessId) fetchProgram().then((r) => setProgram(r.program)).catch(() => setProgram(null));
   }, [businessId]);
 
   if (!businessId) {

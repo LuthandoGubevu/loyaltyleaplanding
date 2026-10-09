@@ -147,9 +147,9 @@ export default function StaffCompanyDetailPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Launch">Launch</SelectItem>
-                <SelectItem value="Growth">Growth</SelectItem>
-                <SelectItem value="Complete">Complete</SelectItem>
+                <SelectItem value="Starter">Starter (R399)</SelectItem>
+                <SelectItem value="Growth">Growth (R799)</SelectItem>
+                <SelectItem value="Pro">Pro (R1,199)</SelectItem>
               </SelectContent>
             </Select>
           </div>

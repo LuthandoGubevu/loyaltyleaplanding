@@ -7,16 +7,24 @@
 // Members, stamp log entries and till codes are only ever written by the
 // server (src/app/api), never by the browser.
 
+export type BirthdayReward = {
+  enabled: boolean;
+  name: string;
+  costRand: number | null;
+};
+
 export type LoyaltyProgram = {
   earnRule: string;
   minSpend: number | null;
   cooldownHours: number;
+  birthdayReward: BirthdayReward;
 };
 
 export const DEFAULT_PROGRAM: LoyaltyProgram = {
   earnRule: '1 stamp per visit',
   minSpend: null,
   cooldownHours: 2,
+  birthdayReward: { enabled: false, name: 'Birthday treat', costRand: null },
 };
 
 export type Reward = {
@@ -24,6 +32,8 @@ export type Reward = {
   name: string;
   stampsRequired: number;
   active: boolean;
+  // What the reward costs the business to give away, for analytics.
+  costRand: number | null;
 };
 
 export type MemberSummary = {
@@ -32,6 +42,10 @@ export type MemberSummary = {
   phone: string;
   stamps: number;
   lifetimeStamps: number;
+  birthday: string | null; // "MM-DD"
+  // Set when the business offers birthday rewards and it's the member's
+  // birthday week and they haven't claimed this year's reward yet.
+  birthdayRewardAvailable: { name: string } | null;
 };
 
 export type RewardProgress = Reward & { eligible: boolean };

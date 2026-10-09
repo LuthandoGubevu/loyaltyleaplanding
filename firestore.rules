@@ -96,29 +96,26 @@ service cloud.firestore {
           && request.resource.data.status == 'active'
         )
         // The owning admin may update their own business's basic profile
-        // fields, but not their plan, assignment, or claim state.
+        // fields, but not their plan, assignment, claim state, or loyalty
+        // programme (saved through the server so plan limits apply).
         || (
           request.auth != null && resource.data.adminUid == request.auth.uid
-          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['adminUid', 'assignedAdminEmail', 'plan', 'status'])
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['adminUid', 'assignedAdminEmail', 'plan', 'status', 'program'])
         );
 
-      // Loyalty data. Members, stamp log entries and till codes are written
-      // only by the server (Admin SDK, which bypasses these rules), so the
+      // Loyalty data. Rewards, members, stamp log entries and till codes are
+      // written only by the server (Admin SDK, which bypasses these rules), so the
       // browser can never add stamps itself.
       function ownsBusiness() {
         return isBusinessAdmin(businessId);
       }
 
-      // Rewards are defined by the business admin; any signed-in user may
-      // see them so customers know what they're working towards.
+      // Rewards are defined by the business admin through the server (which
+      // enforces the plan's reward limit); any signed-in user may see them so
+      // customers know what they're working towards.
       match /rewards/{rewardId} {
         allow read: if request.auth != null;
-        allow create, update: if ownsBusiness()
-          && request.resource.data.name is string
-          && request.resource.data.stampsRequired is int
-          && request.resource.data.stampsRequired > 0
-          && request.resource.data.active is bool;
-        allow delete: if false;
+        allow write: if false;
       }
 
       match /members/{memberId} {

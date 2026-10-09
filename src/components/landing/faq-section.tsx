@@ -35,7 +35,19 @@ const faqs = [
   },
   {
     question: "What kind of support do you offer?",
-    answer: "All plans include email support. Growth includes priority email support, and Pro includes dedicated onboarding and phone support.",
+    answer: "All plans include email support. Growth includes priority email support, and Pro includes dedicated onboarding.",
+  },
+  {
+    question: "What happens if I reach my member limit?",
+    answer: "Your existing members keep collecting stamps and redeeming rewards as normal. You just can't add new members until you upgrade: Starter allows 250 members, Growth 1,000 and Pro is unlimited.",
+  },
+  {
+    question: "How do birthday rewards work?",
+    answer: "On the Growth and Pro plans you can offer a free treat in each customer's birthday week, once a year, without using their stamps. Staff see a birthday badge on the Till screen. Customers can add their birthday when they sign up.",
+  },
+  {
+    question: "Is there a free trial?",
+    answer: "Yes. Your first month is free on every plan, so you can try Loyalty Leap with your own customers before you pay.",
   },
 ];
 

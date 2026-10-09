@@ -1,126 +1,190 @@
-
 "use client";
 
-import { Suspense } from 'react';
-import { useSearchParams } from "next/navigation"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { getLoyaltyData } from "@/lib/mock-data";
-import { Skeleton } from '@/components/ui/skeleton';
+import { useEffect, useMemo, useState } from "react";
+import { Download, Loader2, Lock, Search } from "lucide-react";
 
-// Mock data removed, assuming data will be fetched from a real backend.
-const allCustomers: any[] = [];
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
+import { auth } from "@/lib/firebase/config";
+import { apiFetch } from "@/lib/api-client";
+import { formatZaPhone } from "@/lib/phone";
+import { formatLimit, UPGRADE_CONTACT, type Plan } from "@/lib/plans";
 
-function CustomersContent() {
-  const searchParams = useSearchParams();
-  const storeId = searchParams.get('storeId');
+type Customer = {
+  name: string;
+  phone: string;
+  stamps: number;
+  lifetimeStamps: number;
+  joined: number | null;
+  lastVisit: number | null;
+  birthday: string | null;
+};
 
-  const customers = storeId && storeId !== 'all' 
-    ? allCustomers.filter(c => c.stores.includes(storeId))
-    : allCustomers;
-  
-  const currentStore = storeId ? getLoyaltyData().stores.find(s => s.id === storeId) : null;
+type CustomersResponse = {
+  plan: Plan;
+  usage: { members: number; maxMembers: number | null; activeRewards: number; maxActiveRewards: number | null };
+  members: Customer[];
+};
 
+const PAGE_SIZE = 50;
+
+const day = (t: number | null) => (t === null ? "—" : new Date(t).toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric" }));
+
+function UsageCard({ data }: { data: CustomersResponse }) {
+  const { members, maxMembers } = data.usage;
+  const pct = maxMembers ? Math.min(100, (members / maxMembers) * 100) : null;
+  const full = maxMembers !== null && members >= maxMembers;
+  const near = pct !== null && pct >= 90;
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Customers</CardTitle>
-        <CardDescription>
-          A list of all customers in your loyalty program {currentStore ? `at ${currentStore.name}` : ''}.
-        </CardDescription>
+      <CardHeader className="pb-3">
+        <CardDescription>{data.plan.id} plan</CardDescription>
+        <CardTitle className="text-2xl tabular-nums">
+          {members.toLocaleString("en-ZA")} <span className="text-base font-normal text-muted-foreground">/ {formatLimit(maxMembers)} members</span>
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Customer</TableHead>
-              <TableHead>Tier</TableHead>
-              <TableHead className="text-right">Total Points</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {customers.length > 0 ? (
-                customers.map(customer => (
-                    <TableRow key={customer.email}>
-                        <TableCell>
-                            <div className="flex items-center gap-4">
-                                <Avatar className="hidden h-9 w-9 sm:flex">
-                                    <AvatarImage src={`https://placehold.co/40x40.png`} alt="Avatar" data-ai-hint="user avatar"/>
-                                    <AvatarFallback>{customer.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div className="grid gap-1">
-                                    <p className="text-sm font-medium leading-none">{customer.name}</p>
-                                    <p className="text-sm text-muted-foreground">{customer.email}</p>
-                                </div>
-                            </div>
-                        </TableCell>
-                        <TableCell>
-                            <Badge variant={customer.tier === 'Gold' ? 'default' : customer.tier === 'Silver' ? 'secondary' : 'outline'}>{customer.tier}</Badge>
-                        </TableCell>
-                        <TableCell className="text-right">{customer.totalPoints}</TableCell>
-                    </TableRow>
-                ))
-            ) : (
-                <TableRow>
-                    <TableCell colSpan={3} className="text-center h-24">
-                        No customers yet.
-                    </TableCell>
-                </TableRow>
-            )}
-          </TableBody>
-        </Table>
+      <CardContent className="space-y-3">
+        {pct !== null && <Progress value={pct} aria-label={`${Math.round(pct)}% of member limit used`} />}
+        {near && (
+          <p className="text-sm">
+            {full
+              ? "You've reached your member limit. Existing members can still earn stamps, but new customers can't join until you upgrade."
+              : "You're close to your member limit."}{" "}
+            <a className="font-medium text-primary underline-offset-4 hover:underline" href={`mailto:${UPGRADE_CONTACT}?subject=Upgrade%20my%20Loyalty%20Leap%20plan`}>Ask about upgrading</a>.
+          </p>
+        )}
       </CardContent>
     </Card>
   );
 }
 
-function CustomersSkeleton() {
+function ExportButtons({ plan }: { plan: Plan }) {
+  const { toast } = useToast();
+  const [busy, setBusy] = useState<string | null>(null);
+
+  if (!plan.export) {
     return (
-        <Card>
-            <CardHeader>
-                <Skeleton className="h-8 w-1/4" />
-                <Skeleton className="h-4 w-1/2" />
-            </CardHeader>
-            <CardContent>
-                 <div className="space-y-4">
-                    {[...Array(5)].map((_, i) => (
-                        <div key={i} className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <Skeleton className="h-9 w-9 rounded-full" />
-                                <div className="space-y-2">
-                                    <Skeleton className="h-4 w-24" />
-                                    <Skeleton className="h-4 w-32" />
-                                </div>
-                            </div>
-                            <Skeleton className="h-6 w-16 rounded-full" />
-                            <Skeleton className="h-6 w-12" />
-                        </div>
-                    ))}
-                 </div>
-            </CardContent>
-        </Card>
-    )
+      <p className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Lock className="h-4 w-4" />CSV export is included in Pro.
+      </p>
+    );
+  }
+
+  const download = async (type: "members" | "stamps") => {
+    setBusy(type);
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const res = await fetch(`/api/export?type=${type}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? "Export failed.");
+      const url = URL.createObjectURL(await res.blob());
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `loyalty-leap-${type}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Export failed", description: error.message });
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Button variant="outline" size="sm" onClick={() => download("members")} disabled={busy !== null}>
+        {busy === "members" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}Export customers
+      </Button>
+      <Button variant="outline" size="sm" onClick={() => download("stamps")} disabled={busy !== null}>
+        {busy === "stamps" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}Export stamp history
+      </Button>
+    </div>
+  );
 }
 
 export default function CustomersPage() {
-    return (
-        <Suspense fallback={<CustomersSkeleton />}>
-            <CustomersContent />
-        </Suspense>
-    )
+  const [data, setData] = useState<CustomersResponse | null>(null);
+  const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
+  const [shown, setShown] = useState(PAGE_SIZE);
+
+  useEffect(() => {
+    apiFetch<CustomersResponse>("/api/customers").then(setData).catch((e) => setError(e.message));
+  }, []);
+
+  const filtered = useMemo(() => {
+    if (!data) return [];
+    const q = query.trim().toLowerCase();
+    const digits = q.replace(/\D/g, "").replace(/^0/, "");
+    if (!q) return data.members;
+    return data.members.filter((m) => m.name.toLowerCase().includes(q) || (digits.length > 0 && m.phone.includes(digits)));
+  }, [data, query]);
+
+  if (error) return <Alert variant="destructive"><AlertTitle>Could not load customers</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>;
+  if (!data) return <div className="grid gap-4"><Skeleton className="h-28 w-full" /><Skeleton className="h-64 w-full" /></div>;
+
+  return (
+    <div className="grid gap-4 md:gap-6">
+      <UsageCard data={data} />
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <CardTitle>Customers</CardTitle>
+              <CardDescription>Everyone in your loyalty programme, most recent visit first.</CardDescription>
+            </div>
+            <ExportButtons plan={data.plan} />
+          </div>
+          <div className="relative pt-2">
+            <Search className="absolute left-3 top-1/2 mt-1 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input className="pl-9" placeholder="Search by name or cellphone" value={query} onChange={(e) => { setQuery(e.target.value); setShown(PAGE_SIZE); }} aria-label="Search customers" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Customer</TableHead>
+                <TableHead className="text-right">Stamps</TableHead>
+                <TableHead className="hidden text-right sm:table-cell">Lifetime</TableHead>
+                <TableHead className="hidden md:table-cell">Last visit</TableHead>
+                <TableHead className="hidden md:table-cell">Joined</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                    {data.members.length === 0 ? "No customers yet. Add your first one from the Till." : "No customers match your search."}
+                  </TableCell>
+                </TableRow>
+              ) : filtered.slice(0, shown).map((m) => (
+                <TableRow key={m.phone}>
+                  <TableCell>
+                    <p className="font-medium">{m.name}</p>
+                    <p className="text-xs text-muted-foreground">{formatZaPhone(m.phone)}</p>
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">{m.stamps}</TableCell>
+                  <TableCell className="hidden text-right tabular-nums sm:table-cell">{m.lifetimeStamps}</TableCell>
+                  <TableCell className="hidden md:table-cell">{day(m.lastVisit)}</TableCell>
+                  <TableCell className="hidden md:table-cell">{day(m.joined)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {filtered.length > shown && (
+            <div className="mt-4 flex flex-col items-center gap-2 text-sm text-muted-foreground">
+              Showing {shown.toLocaleString("en-ZA")} of {filtered.length.toLocaleString("en-ZA")}
+              <Button variant="outline" size="sm" onClick={() => setShown((n) => n + PAGE_SIZE)}>Show more</Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

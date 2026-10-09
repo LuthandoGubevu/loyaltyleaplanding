@@ -2,11 +2,13 @@ import { z } from 'zod';
 import { ApiError, errorResponse, requireAdminBusiness } from '@/lib/firebase/admin';
 import { addStamp, getActiveRewards, withProgress } from '@/lib/loyalty/server';
 import { normalizeZaPhone } from '@/lib/phone';
+import { isValidBirthday } from '@/lib/birthday';
 
 const bodySchema = z.object({
   phone: z.string(),
   name: z.string().trim().min(2).max(80).optional(),
   consent: z.boolean().optional(),
+  birthday: z.string().optional(), // "MM-DD", optional
 });
 
 // Adds a stamp for a customer identified by cellphone number, creating them
@@ -19,6 +21,8 @@ export async function POST(req: Request) {
 
     const phone = normalizeZaPhone(body.data.phone);
     if (!phone) throw new ApiError(400, 'Enter a valid South African cellphone number.');
+    const birthday = body.data.birthday || null;
+    if (birthday && !isValidBirthday(birthday)) throw new ApiError(400, 'Enter a valid birthday.');
     if (body.data.name && !body.data.consent) {
       throw new ApiError(400, 'The customer must agree to join before you add them.');
     }
@@ -28,7 +32,7 @@ export async function POST(req: Request) {
       phone,
       method: 'phone',
       byUid: user.uid,
-      newMember: body.data.name ? { name: body.data.name, uid: null, addedBy: 'till' } : undefined,
+      newMember: body.data.name ? { name: body.data.name, uid: null, addedBy: 'till', birthday } : undefined,
     });
     const rewards = await getActiveRewards(user.businessId);
     return Response.json({ member: result.member, rewards: withProgress(rewards, result.member.stamps) });

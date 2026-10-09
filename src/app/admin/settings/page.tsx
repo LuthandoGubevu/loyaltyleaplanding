@@ -34,7 +34,7 @@ export default function SettingsPage() {
                         <Label htmlFor="logo">Logo</Label>
                         <div className="flex items-center gap-4">
                             <Image
-                                src="/logos/logo.png"
+                                src="/gift.png"
                                 alt="Current Logo"
                                 width={40}
                                 height={40}

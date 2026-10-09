@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Cake, Gift, QrCode, Store as StoreIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight, Cake, Gift, PartyPopper, QrCode, Store as StoreIcon } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useApi, visitDate, type CustomerStore } from "@/components/customer/use-customer-data";
 import { formatZaPhone } from "@/lib/phone";
+import { apiFetch } from "@/lib/api-client";
 
 function StoreCard({ store }: { store: CustomerStore }) {
   const target = store.nextReward ? store.stamps + store.nextReward.stampsToGo : store.rewards.at(-1)?.stampsRequired ?? 0;
@@ -60,10 +62,32 @@ function StoreCard({ store }: { store: CustomerStore }) {
 }
 
 export default function CustomerDashboardPage() {
-  const { data, error, loading } = useApi<{ phone: string | null; stores: CustomerStore[] }>("/api/me/stores");
+  // Link first (shops that registered this number before sign-up), then load.
+  const [linkedNow, setLinkedNow] = useState<string[] | null>(null);
+  useEffect(() => {
+    // Shops linked during sign-up are handed over by the signup page.
+    let fromSignup: string[] = [];
+    try {
+      fromSignup = JSON.parse(sessionStorage.getItem("ll-linked-shops") ?? "[]");
+      sessionStorage.removeItem("ll-linked-shops");
+    } catch {}
+    apiFetch<{ newlyLinked: string[] }>("/api/me/link", { method: "POST" })
+      .then((r) => setLinkedNow([...new Set([...fromSignup, ...r.newlyLinked])]))
+      .catch(() => setLinkedNow(fromSignup));
+  }, []);
+  const { data, error, loading } = useApi<{ phone: string | null; stores: CustomerStore[] }>(linkedNow ? "/api/me/stores" : null);
 
   return (
     <div className="grid auto-rows-max items-start gap-4 md:gap-8">
+      {linkedNow && linkedNow.length > 0 && (
+        <Alert className="border-primary">
+          <PartyPopper className="h-4 w-4 text-primary" />
+          <AlertTitle>Your account is connected</AlertTitle>
+          <AlertDescription>
+            We found your stamps at {linkedNow.join(", ")}. From now on, scan the QR code at the till to collect stamps with the app.
+          </AlertDescription>
+        </Alert>
+      )}
       <Card>
         <CardHeader>
           <CardTitle>Your shops</CardTitle>
@@ -75,7 +99,7 @@ export default function CustomerDashboardPage() {
         <CardContent>
           {error ? (
             <Alert variant="destructive"><AlertTitle>Could not load your shops</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>
-          ) : loading ? (
+          ) : loading || !data ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"><Skeleton className="h-48" /><Skeleton className="h-48" /></div>
           ) : data!.stores.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

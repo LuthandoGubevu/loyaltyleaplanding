@@ -35,6 +35,7 @@ import { auth } from '@/lib/firebase/config';
 import { createUserProfile, findPendingBusinessByEmail, claimBusiness, getUserProfile } from '@/lib/firebase/firestore';
 import { isStaffEmail } from '@/lib/roles';
 import { normalizeZaPhone } from '@/lib/phone';
+import { apiFetch } from '@/lib/api-client';
 
 const formSchema = z.object({
     firstName: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
@@ -144,6 +145,12 @@ export default function SignupPage() {
           redirectTo = '/admin/dashboard';
         } else {
           await createUserProfile(user.uid, { ...baseProfile, role: 'customer' });
+          // Connect the account to shops that already registered this
+          // cellphone number at their till. The dashboard retries if this fails.
+          const link = await apiFetch<{ newlyLinked: string[] }>('/api/me/link', { method: 'POST' }).catch(() => null);
+          if (link?.newlyLinked.length) {
+            try { sessionStorage.setItem('ll-linked-shops', JSON.stringify(link.newlyLinked)); } catch {}
+          }
           redirectTo = '/customer/dashboard';
         }
       }

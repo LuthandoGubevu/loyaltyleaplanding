@@ -29,6 +29,8 @@ type MemberRow = {
   lastStampAt: number | null;
   birthday: string | null;
   birthYear: number | null;
+  email: string | null;
+  hasApp: boolean;
 };
 
 const millis = (v: unknown): number | null => (v instanceof Timestamp ? v.toMillis() : null);
@@ -62,6 +64,8 @@ export async function loadMembers(bid: string): Promise<MemberRow[]> {
       lastStampAt: millis(m.lastStampAt),
       birthday: m.birthday ?? null,
       birthYear: typeof m.birthYear === 'number' ? m.birthYear : null,
+      email: m.email ?? null,
+      hasApp: Boolean(m.uid),
     };
   });
 }

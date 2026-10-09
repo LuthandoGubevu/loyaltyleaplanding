@@ -15,6 +15,8 @@ import { auth } from "@/lib/firebase/config";
 import { apiFetch } from "@/lib/api-client";
 import { formatZaPhone } from "@/lib/phone";
 import { formatLimit, UPGRADE_CONTACT, type Plan } from "@/lib/plans";
+import { AddCustomerDialog } from "@/components/admin/add-customer-dialog";
+import { Badge } from "@/components/ui/badge";
 
 type Customer = {
   name: string;
@@ -24,6 +26,8 @@ type Customer = {
   joined: number | null;
   lastVisit: number | null;
   birthday: string | null;
+  email: string | null;
+  hasApp: boolean;
 };
 
 type CustomersResponse = {
@@ -113,9 +117,8 @@ export default function CustomersPage() {
   const [query, setQuery] = useState("");
   const [shown, setShown] = useState(PAGE_SIZE);
 
-  useEffect(() => {
-    apiFetch<CustomersResponse>("/api/customers").then(setData).catch((e) => setError(e.message));
-  }, []);
+  const load = () => apiFetch<CustomersResponse>("/api/customers").then(setData).catch((e) => setError(e.message));
+  useEffect(() => { load(); }, []);
 
   const filtered = useMemo(() => {
     if (!data) return [];
@@ -138,7 +141,13 @@ export default function CustomersPage() {
               <CardTitle>Customers</CardTitle>
               <CardDescription>Everyone in your loyalty programme, most recent visit first.</CardDescription>
             </div>
-            <ExportButtons plan={data.plan} />
+            <div className="flex flex-wrap items-center gap-2">
+              <AddCustomerDialog
+                onAdded={load}
+                disabled={data.usage.maxMembers !== null && data.usage.members >= data.usage.maxMembers}
+              />
+              <ExportButtons plan={data.plan} />
+            </div>
           </div>
           <div className="relative pt-2">
             <Search className="absolute left-3 top-1/2 mt-1 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -154,13 +163,14 @@ export default function CustomersPage() {
                 <TableHead className="hidden text-right sm:table-cell">Lifetime</TableHead>
                 <TableHead className="hidden md:table-cell">Last visit</TableHead>
                 <TableHead className="hidden md:table-cell">Joined</TableHead>
+                <TableHead className="hidden sm:table-cell">App</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                    {data.members.length === 0 ? "No customers yet. Add your first one from the Till." : "No customers match your search."}
+                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    {data.members.length === 0 ? "No customers yet. Add your first one with \"Add customer\" or from the Till." : "No customers match your search."}
                   </TableCell>
                 </TableRow>
               ) : filtered.slice(0, shown).map((m) => (
@@ -173,6 +183,9 @@ export default function CustomersPage() {
                   <TableCell className="hidden text-right tabular-nums sm:table-cell">{m.lifetimeStamps}</TableCell>
                   <TableCell className="hidden md:table-cell">{day(m.lastVisit)}</TableCell>
                   <TableCell className="hidden md:table-cell">{day(m.joined)}</TableCell>
+                  <TableCell className="hidden sm:table-cell">
+                    {m.hasApp ? <Badge variant="secondary">Using app</Badge> : <span className="text-xs text-muted-foreground">Not yet</span>}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

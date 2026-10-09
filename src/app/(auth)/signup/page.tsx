@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, type User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, Eye, EyeOff } from "lucide-react";
@@ -32,7 +32,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase/config';
-import { createUserProfile, findPendingBusinessByEmail, claimBusiness } from '@/lib/firebase/firestore';
+import { createUserProfile, findPendingBusinessByEmail, claimBusiness, getUserProfile } from '@/lib/firebase/firestore';
 import { isStaffEmail } from '@/lib/roles';
 import { normalizeZaPhone } from '@/lib/phone';
 
@@ -102,8 +102,25 @@ export default function SignupPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      const user = userCredential.user;
+      let user: User;
+      try {
+        user = (await createUserWithEmailAndPassword(auth, values.email, values.password)).user;
+      } catch (error: any) {
+        if (error?.code !== 'auth/email-already-in-use') throw error;
+        // An earlier signup may have created the login but failed to save the
+        // profile. With the right password, finish setting that account up.
+        try {
+          user = (await signInWithEmailAndPassword(auth, values.email, values.password)).user;
+        } catch {
+          throw new Error('An account with this email already exists. Please log in instead.');
+        }
+        const existing = await getUserProfile(user.uid);
+        if (existing) {
+          toast({ title: 'Welcome back', description: 'You already have an account, so we signed you in.' });
+          router.push(existing.role === 'staff' ? '/staff' : existing.role === 'admin' ? '/admin/dashboard' : '/customer/dashboard');
+          return;
+        }
+      }
 
       const baseProfile = {
         email: user.email!,
@@ -135,7 +152,10 @@ export default function SignupPage() {
         title: 'Account Created',
         description: "You've been successfully signed up!",
       });
-      router.push(redirectTo);
+      // A full page load (not router.push) so the signed-in session picks up
+      // the profile just created. The auth state loaded before the profile
+      // existed, so an admin would otherwise be sent to the customer area.
+      window.location.assign(redirectTo);
     } catch (error: any) {
       toast({
         variant: 'destructive',

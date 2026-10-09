@@ -29,9 +29,12 @@ export type UserProfile = {
 };
 
 export async function createUserProfile(uid: string, data: Omit<UserProfile, 'createdAt'>) {
+    // Firestore rejects undefined values, so optional fields the user left
+    // blank (e.g. date of birth) are left out rather than saved as undefined.
+    const fields = Object.fromEntries(Object.entries(data).filter(([, value]) => value !== undefined));
     try {
         await setDoc(doc(db, "users", uid), {
-            ...data,
+            ...fields,
             createdAt: new Date(),
         });
     } catch (error) {

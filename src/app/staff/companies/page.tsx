@@ -65,7 +65,7 @@ import { format } from "date-fns";
 const addCompanySchema = z.object({
   name: z.string().min(2, { message: "Business name must be at least 2 characters." }),
   assignedAdminEmail: z.string().email({ message: "Invalid email address." }),
-  plan: z.enum(["Launch", "Growth", "Complete"]),
+  plan: z.enum(["Starter", "Growth", "Pro"]),
 });
 
 function statusBadge(status: BusinessStatus) {
@@ -86,7 +86,7 @@ export default function StaffCompaniesPage() {
 
   const form = useForm<z.infer<typeof addCompanySchema>>({
     resolver: zodResolver(addCompanySchema),
-    defaultValues: { name: "", assignedAdminEmail: "", plan: "Launch" },
+    defaultValues: { name: "", assignedAdminEmail: "", plan: "Starter" },
   });
 
   const loadBusinesses = async () => {
@@ -195,9 +195,9 @@ export default function StaffCompaniesPage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Launch">Launch</SelectItem>
-                          <SelectItem value="Growth">Growth</SelectItem>
-                          <SelectItem value="Complete">Complete</SelectItem>
+                          <SelectItem value="Starter">Starter (R399)</SelectItem>
+                          <SelectItem value="Growth">Growth (R799)</SelectItem>
+                          <SelectItem value="Pro">Pro (R1,199)</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

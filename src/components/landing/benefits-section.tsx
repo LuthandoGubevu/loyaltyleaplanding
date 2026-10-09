@@ -33,8 +33,8 @@ const benefits: Benefit[] = [
   },
   {
     icon: BarChart3,
-    title: 'Every Visit on Record',
-    description: 'Every stamp and reward is logged, so you can see who your regulars are and how your programme is performing.',
+    title: 'Analytics That Pay Off',
+    description: 'See your busiest hours, top customers, return rate and who has stopped visiting, plus exactly what your rewards cost you each month.',
   },
   {
     icon: Repeat,

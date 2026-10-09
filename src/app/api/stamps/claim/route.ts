@@ -3,6 +3,7 @@ import { ApiError, adminDb, errorResponse, requireUser } from '@/lib/firebase/ad
 import { addStamp, getActiveRewards, withProgress } from '@/lib/loyalty/server';
 import { parseTillPayload } from '@/lib/loyalty/types';
 import { normalizeZaPhone } from '@/lib/phone';
+import { birthdayFromDate } from '@/lib/birthday';
 
 const bodySchema = z.object({ payload: z.string(), phone: z.string().optional() });
 
@@ -28,13 +29,16 @@ export async function POST(req: Request) {
     }
 
     const name = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Customer';
+    const profile = (await adminDb.collection('users').doc(user.uid).get()).data();
+    const dob: Date | null = profile?.dob?.toDate ? profile.dob.toDate() : null;
+    const birthday = dob ? birthdayFromDate(dob) : { birthday: null, birthYear: null };
     const result = await addStamp({
       bid: parsed.businessId,
       phone,
       method: 'qr',
       byUid: user.uid,
       tillCode: parsed.code,
-      newMember: { name, uid: user.uid, addedBy: 'app' },
+      newMember: { name, uid: user.uid, addedBy: 'app', ...birthday },
       linkUid: user.uid,
     });
     const rewards = await getActiveRewards(parsed.businessId);

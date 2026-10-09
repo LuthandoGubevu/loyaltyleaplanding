@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { PlanCard } from "@/components/admin/plan-card";
 
 export default function SettingsPage() {
   return (
@@ -51,27 +52,7 @@ export default function SettingsPage() {
                 </form>
             </CardContent>
         </Card>
-        <Card>
-            <CardHeader>
-                <CardTitle>App Configuration</CardTitle>
-                <CardDescription>
-                    Configure how your loyalty program behaves.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                 <form className="grid gap-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="points-ratio">Points Ratio (per R1)</Label>
-                        <Input id="points-ratio" type="number" placeholder="1" />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label>POS Integration</Label>
-                        <p className="text-sm text-muted-foreground">Status: <span className="font-semibold text-muted-foreground">Not Connected</span></p>
-                    </div>
-                    <Button type="submit" className="w-fit">Save Configuration</Button>
-                 </form>
-            </CardContent>
-        </Card>
+        <PlanCard />
     </div>
   );
 }

@@ -325,11 +325,22 @@ export default function TillPage() {
   return (
     <Card className="mx-auto w-full max-w-2xl">
       <CardHeader>
-        <CardTitle className="text-2xl">Till</CardTitle>
-        <CardDescription>
-          {program ? program.earnRule : "Add a stamp after each qualifying sale."}
-          {program?.minSpend ? ` · Minimum spend R${program.minSpend}` : ""}
-        </CardDescription>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <CardTitle className="text-2xl">Till</CardTitle>
+            <CardDescription>
+              {program ? program.earnRule : "Add a stamp after each qualifying sale."}
+              {program?.minSpend ? ` · Minimum spend R${program.minSpend}` : ""}
+            </CardDescription>
+          </div>
+          <a
+            href="/admin/help?section=till"
+            className="shrink-0 text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline mt-1"
+            title="Till guide"
+          >
+            ? Help
+          </a>
+        </div>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="qr">

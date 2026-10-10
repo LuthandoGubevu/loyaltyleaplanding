@@ -321,6 +321,19 @@ export default function AnalyticsPage() {
 
   return (
     <div className="grid gap-4 md:gap-6">
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Analytics</h1>
+          <p className="text-sm text-muted-foreground">Your loyalty programme performance.</p>
+        </div>
+        <a
+          href="/admin/help?section=analytics-basic"
+          className="shrink-0 text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+          title="Analytics guide"
+        >
+          ? Help
+        </a>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile label="Members" value={data.totals.members.toLocaleString("en-ZA")} note={`${data.totals.newMembersThisWeek} new this week`} />
         <StatTile label="Stamps this week" value={data.totals.stampsThisWeek.toLocaleString("en-ZA")} />

@@ -11,6 +11,7 @@ import {
   LogOut,
   Settings,
   History,
+  BookOpen,
 } from "lucide-react";
 import { getAuth, signOut } from "firebase/auth";
 import { useRouter, usePathname } from "next/navigation";
@@ -53,6 +54,7 @@ function CustomerLayoutContent({
     { href: "/customer/rewards", icon: Gift, label: "Rewards" },
     { href: "/customer/activity", icon: History, label: "Activity" },
     { href: "/customer/profile", icon: User, label: "Profile" },
+    { href: "/customer/help", icon: BookOpen, label: "Help" },
   ];
 
   return (

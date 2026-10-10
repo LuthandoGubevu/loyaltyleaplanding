@@ -14,6 +14,7 @@ import {
   PanelLeft,
   LogOut,
   ScanLine,
+  BookOpen,
 } from "lucide-react";
 import { getAuth, signOut } from "firebase/auth";
 
@@ -56,6 +57,7 @@ function AdminLayoutContent({
     { href: "/admin/rewards", icon: Gift, label: "Rewards" },
     { href: "/admin/analytics", icon: LineChart, label: "Analytics" },
     { href: "/admin/settings", icon: Settings, label: "Settings" },
+    { href: "/admin/help", icon: BookOpen, label: "Help" },
   ];
 
   return (

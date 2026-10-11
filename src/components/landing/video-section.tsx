@@ -2,7 +2,7 @@
 import { MaxWidthWrapper } from '@/components/max-width-wrapper';
 
 export function VideoSection() {
-  const videoFileName = "loyalty-leap-demo.mp4"; // Assumed video filename in /public
+  const videoFileName = "loyaltyleapexplainer.mp4";
 
   return (
     <section id="demo-video" className="py-16 md:py-24 bg-background">

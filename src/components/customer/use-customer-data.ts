@@ -12,6 +12,9 @@ export type Shop = {
   earnRule: string;
   topReward: { name: string; stampsRequired: number } | null;
   joined: boolean;
+  address?: string;
+  phone?: string;
+  description?: string;
 };
 
 // Small fetch hook for the customer pages' API data.

@@ -125,6 +125,9 @@ export type Business = {
     plan: BusinessPlan;
     createdAt: Date;
     createdByUid: string;
+    address?: string;
+    phone?: string;
+    description?: string;
 };
 
 export type BusinessWithId = Business & { id: string };

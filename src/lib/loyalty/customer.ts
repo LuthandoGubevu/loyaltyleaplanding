@@ -22,6 +22,16 @@ export type CustomerStore = {
   birthdayReward: string | null;
 };
 
+export type PublicShopDetail = {
+  businessId: string;
+  name: string;
+  earnRule: string;
+  address?: string;
+  phone?: string;
+  description?: string;
+  rewards: { id: string; name: string; stampsRequired: number }[];
+};
+
 export type ActivityEntry = {
   businessId: string;
   shop: string;
@@ -95,18 +105,41 @@ export async function getCustomerActivity(uid: string, phone: string | null, bus
   return perShop.flat().sort((a, b) => b.at - a.at).slice(0, 50);
 }
 
+export async function getShopDetail(businessId: string): Promise<PublicShopDetail> {
+  const snap = await adminDb.collection('businesses').doc(businessId).get();
+  if (!snap.exists || snap.data()!.status !== 'active') {
+    const { ApiError } = await import('@/lib/firebase/admin');
+    throw new ApiError(404, 'Shop not found.');
+  }
+  const data = snap.data()!;
+  const rewards = await getActiveRewards(businessId);
+  return {
+    businessId,
+    name: data.name as string,
+    earnRule: programFrom(data).earnRule,
+    address: data.address,
+    phone: data.phone,
+    description: data.description,
+    rewards: rewards.map((r) => ({ id: r.id, name: r.name, stampsRequired: r.stampsRequired })),
+  };
+}
+
 export async function getShops(uid: string, phone: string | null) {
   const [businesses, joined] = await Promise.all([activeBusinesses(), memberships(uid, phone)]);
   const joinedIds = new Set(joined.map(({ business }) => business.id));
   const shops = await Promise.all(
     businesses.map(async (b) => {
       const rewards = await getActiveRewards(b.id);
+      const data = b.data();
       return {
         businessId: b.id,
-        name: b.data().name as string,
-        earnRule: programFrom(b.data()).earnRule,
+        name: data.name as string,
+        earnRule: programFrom(data).earnRule,
         topReward: rewards[0] ? { name: rewards[0].name, stampsRequired: rewards[0].stampsRequired } : null,
         joined: joinedIds.has(b.id),
+        address: data.address as string | undefined,
+        phone: data.phone as string | undefined,
+        description: data.description as string | undefined,
       };
     }),
   );
